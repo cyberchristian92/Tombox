@@ -74,7 +74,17 @@ class Eventos extends Table {
 
 @DriftDatabase(tables: [Unidades, Locais, Bens, ConferenciaSalas, Eventos])
 class AppDatabase extends _$AppDatabase {
-  AppDatabase([QueryExecutor? e]) : super(e ?? driftDatabase(name: 'tombox_db'));
+  AppDatabase([QueryExecutor? e])
+      : super(
+          e ??
+              driftDatabase(
+                name: 'tombox_db',
+                web: DriftWebOptions(
+                  sqlite3Wasm: Uri.parse('sqlite3.wasm'),
+                  driftWorker: Uri.parse('drift_worker.js'),
+                ),
+              ),
+        );
 
   @override
   int get schemaVersion => 1;

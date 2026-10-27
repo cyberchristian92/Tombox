@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:camera/camera.dart';
 import 'package:drift/drift.dart' show Value;
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -96,6 +97,10 @@ class _ConferenciaScreenState extends ConsumerState<ConferenciaScreen>
   }
 
   Future<void> _inicializarPipelineECamera() async {
+    if (kIsWeb) {
+      return;
+    }
+
     final bensSalaSet = _bensEsperados.map((b) => b.tombamento).toSet();
     final todosBensSet = _todosBensUnidade.map((b) => b.tombamento).toSet();
 
@@ -394,6 +399,57 @@ class _ConferenciaScreenState extends ConsumerState<ConferenciaScreen>
   }
 
   Widget _buildFallbackCameraView(ThemeData theme) {
+    if (kIsWeb) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.videocam_off_outlined,
+                size: 64,
+                color: Colors.white.withAlpha(140),
+              ),
+              const SizedBox(height: 12),
+              const Text(
+                'Câmera disponível apenas no app Android',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                'Esta é uma prévia web visual para validação de design e navegação.',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.white.withAlpha(160),
+                  fontSize: 13,
+                ),
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton.icon(
+                icon: const Icon(Icons.qr_code_scanner),
+                label: const Text('Simular Leitura de Plaqueta'),
+                onPressed: () {
+                  if (_bensEsperados.isNotEmpty) {
+                    final primeiroNaoLido = _bensEsperados.firstWhere(
+                      (b) => !_tombamentosLidos.contains(b.tombamento),
+                      orElse: () => _bensEsperados.first,
+                    );
+                    _processarConfirmacao(primeiroNaoLido.tombamento, 'simulado', true);
+                  }
+                },
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
     return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
