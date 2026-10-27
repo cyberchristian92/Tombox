@@ -1,108 +1,189 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/widgets/app_scaffold.dart';
+import '../../../data/local/queries_provider.dart';
 
-class SalasScreen extends StatelessWidget {
+class SalasScreen extends ConsumerWidget {
   const SalasScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-
-    final salasMock = [
-      {'id': 'sala-01', 'nome': 'Sala 101 - Gabinete', 'predio': 'Fórum Central / 1º Andar', 'lidos': 12, 'total': 18, 'status': 'em andamento'},
-      {'id': 'sala-02', 'nome': 'Sala 102 - Secretaria', 'predio': 'Fórum Central / 1º Andar', 'lidos': 0, 'total': 24, 'status': 'não iniciada'},
-      {'id': 'sala-03', 'nome': 'Sala 201 - Audiências', 'predio': 'Fórum Central / 2º Andar', 'lidos': 15, 'total': 15, 'status': 'fechada'},
-      {'id': 'sala-04', 'nome': 'Sala 202 - Assessoria', 'predio': 'Fórum Central / 2º Andar', 'lidos': 0, 'total': 10, 'status': 'não iniciada'},
-    ];
+    final salasAsync = ref.watch(salasStreamProvider);
 
     return AppScaffold(
       title: 'Salas da Unidade',
-      body: ListView.builder(
-        padding: const EdgeInsets.all(16.0),
-        itemCount: salasMock.length,
-        itemBuilder: (context, index) {
-          final sala = salasMock[index];
-          final lidos = sala['lidos'] as int;
-          final total = sala['total'] as int;
-          final status = sala['status'] as String;
-          final progresso = total > 0 ? lidos / total : 0.0;
-
-          Color statusColor = Colors.grey;
-          if (status == 'fechada') statusColor = Colors.green;
-          if (status == 'em andamento') statusColor = Colors.orange;
-
-          return Card(
-            margin: const EdgeInsets.only(bottom: 12.0),
-            child: InkWell(
-              borderRadius: BorderRadius.circular(12),
-              onTap: () => context.push('/conferencia/${sala['id']}'),
+      body: salasAsync.when(
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (e, _) => Center(child: Text('Erro ao carregar salas: $e')),
+        data: (salas) {
+          if (salas.isEmpty) {
+            return Center(
               child: Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(24.0),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(
-                          child: Text(
-                            sala['nome'] as String,
-                            style: theme.textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: statusColor.withAlpha(40),
-                            borderRadius: BorderRadius.circular(6),
-                            border: Border.all(color: statusColor.withAlpha(100)),
-                          ),
-                          child: Text(
-                            status,
-                            style: TextStyle(
-                              color: statusColor,
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      sala['predio'] as String,
-                      style: theme.textTheme.bodySmall,
+                    Icon(
+                      Icons.meeting_room_outlined,
+                      size: 64,
+                      color: theme.colorScheme.primary.withAlpha(120),
                     ),
                     const SizedBox(height: 12),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(4),
-                            child: LinearProgressIndicator(
-                              value: progresso,
-                              minHeight: 8,
-                              backgroundColor: theme.colorScheme.surfaceContainerHighest,
-                              color: theme.colorScheme.primary,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Text(
-                          '$lidos de $total lidos',
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
+                    Text(
+                      'Nenhuma sala encontrada',
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    const Text(
+                      'Carregue a planilha na tela inicial para visualizar as salas.',
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 16),
+                    ElevatedButton(
+                      child: const Text('Voltar ao Início'),
+                      onPressed: () => context.go('/'),
                     ),
                   ],
                 ),
               ),
-            ),
+            );
+          }
+
+          // Agrupa as salas por prédio e andar
+          final grupos = <String, List<SalaComProgresso>>{};
+          for (final sala in salas) {
+            grupos.putIfAbsent(sala.predioEAndar, () => []).add(sala);
+          }
+
+          return ListView.builder(
+            padding: const EdgeInsets.all(16.0),
+            itemCount: grupos.keys.length,
+            itemBuilder: (context, grupoIndex) {
+              final predioEAndar = grupos.keys.elementAt(grupoIndex);
+              final salasDoGrupo = grupos[predioEAndar]!;
+
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.location_city,
+                          size: 18,
+                          color: theme.colorScheme.primary,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          predioEAndar,
+                          style: theme.textTheme.titleSmall?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: theme.colorScheme.primary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  ...salasDoGrupo.map((sala) {
+                    final lidos = sala.bensLidos;
+                    final total = sala.totalBens;
+                    final status = sala.status;
+                    final progresso = sala.progresso;
+
+                    Color statusColor = Colors.grey;
+                    String statusLabel = 'não iniciada';
+                    if (status == 'fechada') {
+                      statusColor = Colors.green;
+                      statusLabel = 'fechada';
+                    } else if (status == 'em_andamento') {
+                      statusColor = Colors.orange;
+                      statusLabel = 'em andamento';
+                    }
+
+                    return Card(
+                      margin: const EdgeInsets.only(bottom: 10.0),
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(12),
+                        onTap: () => context.push('/conferencia/${sala.id}'),
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      sala.nome,
+                                      style: theme.textTheme.titleMedium?.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 8,
+                                      vertical: 4,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: statusColor.withAlpha(40),
+                                      borderRadius: BorderRadius.circular(6),
+                                      border: Border.all(
+                                        color: statusColor.withAlpha(100),
+                                      ),
+                                    ),
+                                    child: Text(
+                                      statusLabel,
+                                      style: TextStyle(
+                                        color: statusColor,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 12),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(4),
+                                      child: LinearProgressIndicator(
+                                        value: progresso,
+                                        minHeight: 8,
+                                        backgroundColor: theme
+                                            .colorScheme.surfaceContainerHighest,
+                                        color: theme.colorScheme.primary,
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Text(
+                                    '$lidos de $total lidos',
+                                    style: theme.textTheme.bodySmall?.copyWith(
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  }),
+                  const SizedBox(height: 8),
+                ],
+              );
+            },
           );
         },
       ),
