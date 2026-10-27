@@ -1,0 +1,12 @@
+{
+  "appName": "Tombox",
+  "instituicao": "",
+  "siglaInstituicao": "",
+  "logo": "assets/brand/logo.png",
+  "cores": {
+    "primaria": "#1E3A8A",
+    "secundaria": "#3B82F6",
+    "fundo": "#F8FAFC",
+    "texto": "#0F172A"
+  }
+}

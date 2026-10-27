@@ -1,0 +1,12 @@
+{
+  "appName": "Tombox",
+  "instituicao": "Tribunal de Justiça do Estado do Pará",
+  "siglaInstituicao": "TJPA",
+  "logo": "assets/brand/logo.png",
+  "cores": {
+    "primaria": "#0B3D6E",
+    "secundaria": "#C9A227",
+    "fundo": "#F7F8FA",
+    "texto": "#1A1A1A"
+  }
+}
