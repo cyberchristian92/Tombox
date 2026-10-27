@@ -114,6 +114,57 @@ void main() {
       expect(motor.avaliarTextoOcr('ABCDEF').decisao, DecisaoLeitura.descartado);
       expect(motor.avaliarTextoOcr('TRIBUNAL').decisao, DecisaoLeitura.descartado);
     });
+
+    test('Prompt 04b: Extração de candidatos com texto junto na mesma linha', () {
+      // 1. PATRIMÔNIO 010001
+      final r1 = motor.avaliarTextoOcr('PATRIMÔNIO 010001');
+      expect(r1.decisao, DecisaoLeitura.confirmado);
+      expect(r1.tombamentoIdentificado, '010001');
+
+      // 2. TJPA Nº 010.001
+      final r2 = motor.avaliarTextoOcr('TJPA Nº 010.001');
+      expect(r2.decisao, DecisaoLeitura.confirmado);
+      expect(r2.tombamentoIdentificado, '010001');
+
+      // 3. ESTADO DO PARÁ 0100O1 (com O no lugar de zero)
+      final r3 = motor.avaliarTextoOcr('ESTADO DO PARÁ 0100O1');
+      expect(r3.decisao, DecisaoLeitura.confirmado);
+      expect(r3.tombamentoIdentificado, '010001');
+
+      // 4. Nº 010-001
+      final r4 = motor.avaliarTextoOcr('Nº 010-001');
+      expect(r4.decisao, DecisaoLeitura.confirmado);
+      expect(r4.tombamentoIdentificado, '010001');
+
+      // 5. Linha só com texto (deve descartar)
+      final r5 = motor.avaliarTextoOcr('TRIBUNAL DE JUSTIÇA DO ESTADO DO PARÁ');
+      expect(r5.decisao, DecisaoLeitura.descartado);
+
+      // 6. Linha com dois números de plaquetas diferentes (deve achar os dois)
+      final candsLinhaDupla = motor.extrairCandidatosDeTexto('010001 e 010002');
+      expect(candsLinhaDupla, containsAll(['010001', '010002']));
+
+      final resultadosLinhaDupla = motor.avaliarLinhaCompleta('010001 e 010002');
+      expect(resultadosLinhaDupla.length, 2);
+      expect(resultadosLinhaDupla.map((r) => r.tombamentoIdentificado),
+          containsAll(['010001', '010002']));
+    });
+
+    test('Prompt 04b: Códigos de barras espúrios descartados vs tombamento vermelho', () {
+      // EAN-13 de produto: deve ser ignorado/descartado
+      final rEan = motor.avaliarCodigoBarras('7891234567890');
+      expect(rEan.decisao, DecisaoLeitura.descartado);
+
+      // QR com URL: deve ser ignorado/descartado
+      final rUrl = motor.avaliarCodigoBarras('https://tjpa.jus.br/inventario');
+      expect(rUrl.decisao, DecisaoLeitura.descartado);
+
+      // Código no formato válido de tombamento mas fora da unidade: vermelho
+      final rVermelho = motor.avaliarCodigoBarras('999999');
+      expect(rVermelho.decisao, DecisaoLeitura.confirmado);
+      expect(rVermelho.classificacao, ClassificacaoPlaqueta.vermelho);
+      expect(rVermelho.tombamentoIdentificado, '999999');
+    });
   });
 
   group('EstabilidadeFiltro - Temporal e Suavização', () {

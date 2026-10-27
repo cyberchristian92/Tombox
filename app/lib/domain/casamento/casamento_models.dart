@@ -76,3 +76,14 @@ class ResultadoCasamento {
   bool get isProvavel => decisao == DecisaoLeitura.provavel;
   bool get isDescartado => decisao == DecisaoLeitura.descartado;
 }
+
+class TextoBrutoDeteccao {
+  final String texto;
+  final RectDeteccao caixa;
+
+  const TextoBrutoDeteccao({
+    required this.texto,
+    required this.caixa,
+  });
+}
+

@@ -137,17 +137,85 @@ class CasamentoMotor {
       );
     }
 
-    // Código lido com confiança que não existe na unidade
+    // Correção: só classificar como vermelho quando o valor normalizado
+    // tiver formato de tombamento (validarCandidato).
+    // EAN-13, QR com URLs ou códigos de produto são descartados / ignorados.
+    if (validarCandidato(limpo)) {
+      return ResultadoCasamento(
+        textoLido: codigoLido,
+        textoNormalizado: limpo,
+        tombamentoIdentificado: limpo,
+        decisao: DecisaoLeitura.confirmado,
+        classificacao: ClassificacaoPlaqueta.vermelho,
+        menorDistancia: null,
+        caixa: caixa,
+        isCodigoBarras: true,
+      );
+    }
+
     return ResultadoCasamento(
       textoLido: codigoLido,
       textoNormalizado: limpo,
-      tombamentoIdentificado: limpo,
-      decisao: DecisaoLeitura.confirmado,
-      classificacao: ClassificacaoPlaqueta.vermelho,
-      menorDistancia: null,
+      decisao: DecisaoLeitura.descartado,
       caixa: caixa,
       isCodigoBarras: true,
     );
+  }
+
+  /// Extrai candidatos a número de plaqueta de uma linha de texto.
+  /// Suporta plaquetas com texto junto (ex: "PATRIMÔNIO 010001", "TJPA Nº 010.001",
+  /// "ESTADO DO PARÁ 0100O1", "Nº 010-001"), descartando linhas puramente de texto
+  /// e separando múltiplos números distintos se presentes na mesma linha.
+  List<String> extrairCandidatosDeTexto(String linha) {
+    if (linha.trim().isEmpty) return const [];
+
+    final encontrados = <String>{};
+
+    // 1. Sequências numéricas ou com trocas confundíveis e separadores (. - / ou espaço)
+    final regexSequencias = RegExp(
+      r'[0-9OILBSZG][0-9OILBSZG.\- ]{1,}[0-9OILBSZG]',
+      caseSensitive: false,
+    );
+
+    for (final match in regexSequencias.allMatches(linha)) {
+      final seq = match.group(0)!;
+      final norm = normalizarTextoOcr(seq);
+      if (validarCandidato(norm)) {
+        encontrados.add(norm);
+      }
+    }
+
+    // 2. Palavras individuais da linha
+    final palavras = linha.split(RegExp(r'\s+'));
+    for (final p in palavras) {
+      final limpa = p.replaceAll(RegExp(r'^[^\w]+|[^\w]+$'), '');
+      if (limpa.isNotEmpty) {
+        final norm = normalizarTextoOcr(limpa);
+        if (validarCandidato(norm)) {
+          encontrados.add(norm);
+        }
+      }
+    }
+
+    return encontrados.toList();
+  }
+
+  /// Avalia todos os candidatos encontrados em uma linha completa
+  List<ResultadoCasamento> avaliarLinhaCompleta(
+    String linhaTexto, {
+    RectDeteccao? caixa,
+  }) {
+    final candidatos = extrairCandidatosDeTexto(linhaTexto);
+    if (candidatos.isEmpty) return const [];
+
+    final resultados = <ResultadoCasamento>[];
+    for (final cand in candidatos) {
+      final res = _avaliarTokenNormalizado(linhaTexto, cand, caixa: caixa);
+      if (!res.isDescartado) {
+        resultados.add(res);
+      }
+    }
+    return resultados;
   }
 
   /// Processa a leitura de texto pelo OCR
@@ -155,9 +223,28 @@ class CasamentoMotor {
     String textoLido, {
     RectDeteccao? caixa,
   }) {
-    final normalizado = normalizarTextoOcr(textoLido);
+    // Se o texto contiver espaços ou múltiplas palavras, extrai candidatos
+    final candidatos = extrairCandidatosDeTexto(textoLido);
+    if (candidatos.isNotEmpty) {
+      ResultadoCasamento? melhor;
+      for (final cand in candidatos) {
+        final res = _avaliarTokenNormalizado(textoLido, cand, caixa: caixa);
+        if (res.isConfirmado) return res;
+        if (melhor == null || (res.isProvavel && !melhor.isProvavel)) {
+          melhor = res;
+        }
+      }
+      return melhor ??
+          ResultadoCasamento(
+            textoLido: textoLido,
+            textoNormalizado: candidatos.first,
+            decisao: DecisaoLeitura.descartado,
+            caixa: caixa,
+          );
+    }
 
-    // 1. Filtragem rápida
+    // Se não encontrou candidatos via extração, avalia o token diretamente
+    final normalizado = normalizarTextoOcr(textoLido);
     if (!validarCandidato(normalizado)) {
       return ResultadoCasamento(
         textoLido: textoLido,
@@ -167,8 +254,17 @@ class CasamentoMotor {
       );
     }
 
-    // 2. Busca exata (Distância 0.0)
-    // 2.1 Primeiro na sala esperada
+    return _avaliarTokenNormalizado(textoLido, normalizado, caixa: caixa);
+  }
+
+  /// Avalia um token já normalizado e validado
+  ResultadoCasamento _avaliarTokenNormalizado(
+    String textoLido,
+    String normalizado, {
+    RectDeteccao? caixa,
+  }) {
+    // 1. Busca exata (Distância 0.0)
+    // 1.1 Primeiro na sala esperada
     if (tombamentosSala.contains(normalizado)) {
       return ResultadoCasamento(
         textoLido: textoLido,
@@ -181,7 +277,7 @@ class CasamentoMotor {
       );
     }
 
-    // 2.2 Depois no restante da unidade
+    // 1.2 Depois no restante da unidade
     if (tombamentosUnidade.contains(normalizado)) {
       return ResultadoCasamento(
         textoLido: textoLido,
@@ -194,7 +290,7 @@ class CasamentoMotor {
       );
     }
 
-    // 3. Busca por Distância Ponderada
+    // 2. Busca por Distância Ponderada
     final candidatos = <CandidatoMatch>[];
 
     // Avalia sala
@@ -216,7 +312,6 @@ class CasamentoMotor {
     }
 
     if (candidatos.isEmpty) {
-      // Se não houver nenhum match e o código for bem formado, mas não pertencer à unidade
       return ResultadoCasamento(
         textoLido: textoLido,
         textoNormalizado: normalizado,
@@ -225,7 +320,7 @@ class CasamentoMotor {
       );
     }
 
-    // Ordena por distância crescente, priorizando os da sala em caso de empate
+    // Ordena por distância crescente, priorizando sala em empate
     candidatos.sort((a, b) {
       final comp = a.distancia.compareTo(b.distancia);
       if (comp != 0) return comp;
@@ -236,14 +331,11 @@ class CasamentoMotor {
 
     final melhor = candidatos.first;
 
-    // Regra de decisão da especificação:
-    // "melhor distância <= 1.0, único melhor, e vantagem de pelo menos 0,5 sobre o segundo: leitura provável"
     if (candidatos.length > 1) {
       final segundo = candidatos[1];
       final vantagem = (segundo.distancia - melhor.distancia);
 
       if (vantagem < 0.5) {
-        // Empate ou margem de dúvida insuficiente: descarta
         return ResultadoCasamento(
           textoLido: textoLido,
           textoNormalizado: normalizado,
@@ -269,3 +361,4 @@ class CasamentoMotor {
     );
   }
 }
+

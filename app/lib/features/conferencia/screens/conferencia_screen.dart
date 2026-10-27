@@ -11,6 +11,7 @@ import '../../../domain/casamento/casamento_models.dart';
 import '../../../domain/casamento/casamento_motor.dart';
 import '../../../domain/casamento/estabilidade_filtro.dart';
 import '../../../domain/eventos/evento_service.dart';
+import '../../configuracoes/providers/diagnostico_provider.dart';
 import '../pipeline/camera_pipeline.dart';
 import '../widgets/camera_overlay_painter.dart';
 
@@ -36,6 +37,10 @@ class _ConferenciaScreenState extends ConsumerState<ConferenciaScreen>
 
   List<CaixaVisivel> _caixasVisiveis = [];
   ResultadoCasamento? _leituraProvavel;
+  List<TextoBrutoDeteccao> _textosBrutos = [];
+  int _tempoProcessamentoMs = 0;
+  double _fps = 0.0;
+  int _sensorOrientation = 90;
 
   bool _cameraIniciada = false;
   bool _lanternaAtiva = false;
@@ -119,6 +124,9 @@ class _ConferenciaScreenState extends ConsumerState<ConferenciaScreen>
         setState(() {
           _caixasVisiveis = sessao.caixasVisiveis;
           _leituraProvavel = sessao.leituraProvavel;
+          _textosBrutos = sessao.textosBrutos;
+          _tempoProcessamentoMs = sessao.tempoProcessamentoMs;
+          _fps = sessao.fps;
         });
       }
     });
@@ -131,6 +139,8 @@ class _ConferenciaScreenState extends ConsumerState<ConferenciaScreen>
           (c) => c.lensDirection == CameraLensDirection.back,
           orElse: () => cameras.first,
         );
+
+        _sensorOrientation = cameraTraseira.sensorOrientation;
 
         _cameraController = CameraController(
           cameraTraseira,
@@ -296,6 +306,11 @@ class _ConferenciaScreenState extends ConsumerState<ConferenciaScreen>
                       caixas: _caixasVisiveis,
                       cameraImageSize: _cameraController?.value.previewSize ??
                           const Size(640, 480),
+                      sensorOrientation: _sensorOrientation,
+                      modoDiagnostico: ref.watch(modoDiagnosticoProvider),
+                      textosBrutos: _textosBrutos,
+                      tempoProcessamentoMs: _tempoProcessamentoMs,
+                      fps: _fps,
                     ),
                   ),
 

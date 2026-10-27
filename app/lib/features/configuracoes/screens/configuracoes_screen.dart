@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../brand/brand_provider.dart';
 import '../../../core/widgets/app_scaffold.dart';
+import '../providers/diagnostico_provider.dart';
 
 class ConfiguracoesScreen extends ConsumerWidget {
   const ConfiguracoesScreen({super.key});
@@ -134,6 +135,45 @@ class ConfiguracoesScreen extends ConsumerWidget {
                         );
                       }).toList(),
                     ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+
+          // Seção: Calibração e Modo Diagnóstico
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      const Icon(Icons.analytics_outlined),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Diagnóstico da Câmera & OCR',
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  const Text(
+                    'Exibe textos brutos lidos pelo OCR em cinza, medição de quadros por segundo (FPS) e tempo de processamento para calibragem em campo e demonstração no pitch.',
+                    style: TextStyle(fontSize: 13),
+                  ),
+                  const SizedBox(height: 8),
+                  SwitchListTile(
+                    title: const Text('Modo Diagnóstico Ativo'),
+                    subtitle: const Text('Caixas cinzas com texto bruto e HUD de desempenho'),
+                    value: ref.watch(modoDiagnosticoProvider),
+                    onChanged: (val) {
+                      ref.read(modoDiagnosticoProvider.notifier).setEnabled(val);
+                    },
                   ),
                 ],
               ),
