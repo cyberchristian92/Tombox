@@ -13,6 +13,7 @@ class Unidades extends Table {
   Set<Column> get primaryKey => {id};
 }
 
+@DataClassName('Local')
 class Locais extends Table {
   TextColumn get id => text()();
   TextColumn get unidadeId => text()();
@@ -25,6 +26,7 @@ class Locais extends Table {
   Set<Column> get primaryKey => {id};
 }
 
+@DataClassName('Bem')
 class Bens extends Table {
   TextColumn get tombamento => text()(); // Chave primária normalizada
   TextColumn get unidadeId => text()();

@@ -326,7 +326,7 @@ class UnidadesCompanion extends UpdateCompanion<Unidade> {
   }
 }
 
-class $LocaisTable extends Locais with TableInfo<$LocaisTable, Locai> {
+class $LocaisTable extends Locais with TableInfo<$LocaisTable, Local> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
@@ -405,7 +405,7 @@ class $LocaisTable extends Locais with TableInfo<$LocaisTable, Locai> {
   static const String $name = 'locais';
   @override
   VerificationContext validateIntegrity(
-    Insertable<Locai> instance, {
+    Insertable<Local> instance, {
     bool isInserting = false,
   }) {
     final context = VerificationContext();
@@ -462,9 +462,9 @@ class $LocaisTable extends Locais with TableInfo<$LocaisTable, Locai> {
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  Locai map(Map<String, dynamic> data, {String? tablePrefix}) {
+  Local map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return Locai(
+    return Local(
       id: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}id'],
@@ -498,14 +498,14 @@ class $LocaisTable extends Locais with TableInfo<$LocaisTable, Locai> {
   }
 }
 
-class Locai extends DataClass implements Insertable<Locai> {
+class Local extends DataClass implements Insertable<Local> {
   final String id;
   final String unidadeId;
   final String nome;
   final String tipo;
   final String? paiId;
   final String caminhoCompleto;
-  const Locai({
+  const Local({
     required this.id,
     required this.unidadeId,
     required this.nome,
@@ -540,12 +540,12 @@ class Locai extends DataClass implements Insertable<Locai> {
     );
   }
 
-  factory Locai.fromJson(
+  factory Local.fromJson(
     Map<String, dynamic> json, {
     ValueSerializer? serializer,
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return Locai(
+    return Local(
       id: serializer.fromJson<String>(json['id']),
       unidadeId: serializer.fromJson<String>(json['unidadeId']),
       nome: serializer.fromJson<String>(json['nome']),
@@ -567,14 +567,14 @@ class Locai extends DataClass implements Insertable<Locai> {
     };
   }
 
-  Locai copyWith({
+  Local copyWith({
     String? id,
     String? unidadeId,
     String? nome,
     String? tipo,
     Value<String?> paiId = const Value.absent(),
     String? caminhoCompleto,
-  }) => Locai(
+  }) => Local(
     id: id ?? this.id,
     unidadeId: unidadeId ?? this.unidadeId,
     nome: nome ?? this.nome,
@@ -582,8 +582,8 @@ class Locai extends DataClass implements Insertable<Locai> {
     paiId: paiId.present ? paiId.value : this.paiId,
     caminhoCompleto: caminhoCompleto ?? this.caminhoCompleto,
   );
-  Locai copyWithCompanion(LocaisCompanion data) {
-    return Locai(
+  Local copyWithCompanion(LocaisCompanion data) {
+    return Local(
       id: data.id.present ? data.id.value : this.id,
       unidadeId: data.unidadeId.present ? data.unidadeId.value : this.unidadeId,
       nome: data.nome.present ? data.nome.value : this.nome,
@@ -597,7 +597,7 @@ class Locai extends DataClass implements Insertable<Locai> {
 
   @override
   String toString() {
-    return (StringBuffer('Locai(')
+    return (StringBuffer('Local(')
           ..write('id: $id, ')
           ..write('unidadeId: $unidadeId, ')
           ..write('nome: $nome, ')
@@ -614,7 +614,7 @@ class Locai extends DataClass implements Insertable<Locai> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is Locai &&
+      (other is Local &&
           other.id == this.id &&
           other.unidadeId == this.unidadeId &&
           other.nome == this.nome &&
@@ -623,7 +623,7 @@ class Locai extends DataClass implements Insertable<Locai> {
           other.caminhoCompleto == this.caminhoCompleto);
 }
 
-class LocaisCompanion extends UpdateCompanion<Locai> {
+class LocaisCompanion extends UpdateCompanion<Local> {
   final Value<String> id;
   final Value<String> unidadeId;
   final Value<String> nome;
@@ -653,7 +653,7 @@ class LocaisCompanion extends UpdateCompanion<Locai> {
        nome = Value(nome),
        tipo = Value(tipo),
        caminhoCompleto = Value(caminhoCompleto);
-  static Insertable<Locai> custom({
+  static Insertable<Local> custom({
     Expression<String>? id,
     Expression<String>? unidadeId,
     Expression<String>? nome,
@@ -735,7 +735,7 @@ class LocaisCompanion extends UpdateCompanion<Locai> {
   }
 }
 
-class $BensTable extends Bens with TableInfo<$BensTable, Ben> {
+class $BensTable extends Bens with TableInfo<$BensTable, Bem> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
@@ -866,7 +866,7 @@ class $BensTable extends Bens with TableInfo<$BensTable, Ben> {
   static const String $name = 'bens';
   @override
   VerificationContext validateIntegrity(
-    Insertable<Ben> instance, {
+    Insertable<Bem> instance, {
     bool isInserting = false,
   }) {
     final context = VerificationContext();
@@ -954,9 +954,9 @@ class $BensTable extends Bens with TableInfo<$BensTable, Ben> {
   @override
   Set<GeneratedColumn> get $primaryKey => {tombamento};
   @override
-  Ben map(Map<String, dynamic> data, {String? tablePrefix}) {
+  Bem map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return Ben(
+    return Bem(
       tombamento: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}tombamento'],
@@ -1006,7 +1006,7 @@ class $BensTable extends Bens with TableInfo<$BensTable, Ben> {
   }
 }
 
-class Ben extends DataClass implements Insertable<Ben> {
+class Bem extends DataClass implements Insertable<Bem> {
   final String tombamento;
   final String unidadeId;
   final String descricao;
@@ -1017,7 +1017,7 @@ class Ben extends DataClass implements Insertable<Ben> {
   final String? fabricante;
   final String? modelo;
   final String? extras;
-  const Ben({
+  const Bem({
     required this.tombamento,
     required this.unidadeId,
     required this.descricao,
@@ -1084,12 +1084,12 @@ class Ben extends DataClass implements Insertable<Ben> {
     );
   }
 
-  factory Ben.fromJson(
+  factory Bem.fromJson(
     Map<String, dynamic> json, {
     ValueSerializer? serializer,
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return Ben(
+    return Bem(
       tombamento: serializer.fromJson<String>(json['tombamento']),
       unidadeId: serializer.fromJson<String>(json['unidadeId']),
       descricao: serializer.fromJson<String>(json['descricao']),
@@ -1119,7 +1119,7 @@ class Ben extends DataClass implements Insertable<Ben> {
     };
   }
 
-  Ben copyWith({
+  Bem copyWith({
     String? tombamento,
     String? unidadeId,
     String? descricao,
@@ -1130,7 +1130,7 @@ class Ben extends DataClass implements Insertable<Ben> {
     Value<String?> fabricante = const Value.absent(),
     Value<String?> modelo = const Value.absent(),
     Value<String?> extras = const Value.absent(),
-  }) => Ben(
+  }) => Bem(
     tombamento: tombamento ?? this.tombamento,
     unidadeId: unidadeId ?? this.unidadeId,
     descricao: descricao ?? this.descricao,
@@ -1142,8 +1142,8 @@ class Ben extends DataClass implements Insertable<Ben> {
     modelo: modelo.present ? modelo.value : this.modelo,
     extras: extras.present ? extras.value : this.extras,
   );
-  Ben copyWithCompanion(BensCompanion data) {
-    return Ben(
+  Bem copyWithCompanion(BensCompanion data) {
+    return Bem(
       tombamento: data.tombamento.present
           ? data.tombamento.value
           : this.tombamento,
@@ -1169,7 +1169,7 @@ class Ben extends DataClass implements Insertable<Ben> {
 
   @override
   String toString() {
-    return (StringBuffer('Ben(')
+    return (StringBuffer('Bem(')
           ..write('tombamento: $tombamento, ')
           ..write('unidadeId: $unidadeId, ')
           ..write('descricao: $descricao, ')
@@ -1200,7 +1200,7 @@ class Ben extends DataClass implements Insertable<Ben> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is Ben &&
+      (other is Bem &&
           other.tombamento == this.tombamento &&
           other.unidadeId == this.unidadeId &&
           other.descricao == this.descricao &&
@@ -1213,7 +1213,7 @@ class Ben extends DataClass implements Insertable<Ben> {
           other.extras == this.extras);
 }
 
-class BensCompanion extends UpdateCompanion<Ben> {
+class BensCompanion extends UpdateCompanion<Bem> {
   final Value<String> tombamento;
   final Value<String> unidadeId;
   final Value<String> descricao;
@@ -1254,7 +1254,7 @@ class BensCompanion extends UpdateCompanion<Ben> {
        unidadeId = Value(unidadeId),
        descricao = Value(descricao),
        localEsperadoId = Value(localEsperadoId);
-  static Insertable<Ben> custom({
+  static Insertable<Bem> custom({
     Expression<String>? tombamento,
     Expression<String>? unidadeId,
     Expression<String>? descricao,
@@ -2781,14 +2781,14 @@ class $$LocaisTableTableManager
         RootTableManager<
           _$AppDatabase,
           $LocaisTable,
-          Locai,
+          Local,
           $$LocaisTableFilterComposer,
           $$LocaisTableOrderingComposer,
           $$LocaisTableAnnotationComposer,
           $$LocaisTableCreateCompanionBuilder,
           $$LocaisTableUpdateCompanionBuilder,
-          (Locai, BaseReferences<_$AppDatabase, $LocaisTable, Locai>),
-          Locai,
+          (Local, BaseReferences<_$AppDatabase, $LocaisTable, Local>),
+          Local,
           PrefetchHooks Function()
         > {
   $$LocaisTableTableManager(_$AppDatabase db, $LocaisTable table)
@@ -2841,8 +2841,8 @@ class $$LocaisTableTableManager
           withReferenceMapper: (p0) => p0
               .map(
                 (e) => (
-                  e.readTable<$LocaisTable, Locai>(table),
-                  BaseReferences<_$AppDatabase, $LocaisTable, Locai>(
+                  e.readTable<$LocaisTable, Local>(table),
+                  BaseReferences<_$AppDatabase, $LocaisTable, Local>(
                     db,
                     table,
                     e,
@@ -2859,14 +2859,14 @@ typedef $$LocaisTableProcessedTableManager =
     ProcessedTableManager<
       _$AppDatabase,
       $LocaisTable,
-      Locai,
+      Local,
       $$LocaisTableFilterComposer,
       $$LocaisTableOrderingComposer,
       $$LocaisTableAnnotationComposer,
       $$LocaisTableCreateCompanionBuilder,
       $$LocaisTableUpdateCompanionBuilder,
-      (Locai, BaseReferences<_$AppDatabase, $LocaisTable, Locai>),
-      Locai,
+      (Local, BaseReferences<_$AppDatabase, $LocaisTable, Local>),
+      Local,
       PrefetchHooks Function()
     >;
 typedef $$BensTableCreateCompanionBuilder = BensCompanion Function({
@@ -3069,14 +3069,14 @@ class $$BensTableTableManager
         RootTableManager<
           _$AppDatabase,
           $BensTable,
-          Ben,
+          Bem,
           $$BensTableFilterComposer,
           $$BensTableOrderingComposer,
           $$BensTableAnnotationComposer,
           $$BensTableCreateCompanionBuilder,
           $$BensTableUpdateCompanionBuilder,
-          (Ben, BaseReferences<_$AppDatabase, $BensTable, Ben>),
-          Ben,
+          (Bem, BaseReferences<_$AppDatabase, $BensTable, Bem>),
+          Bem,
           PrefetchHooks Function()
         > {
   $$BensTableTableManager(_$AppDatabase db, $BensTable table)
@@ -3145,8 +3145,8 @@ class $$BensTableTableManager
           withReferenceMapper: (p0) => p0
               .map(
                 (e) => (
-                  e.readTable<$BensTable, Ben>(table),
-                  BaseReferences<_$AppDatabase, $BensTable, Ben>(db, table, e),
+                  e.readTable<$BensTable, Bem>(table),
+                  BaseReferences<_$AppDatabase, $BensTable, Bem>(db, table, e),
                 ),
               )
               .toList(),
@@ -3159,14 +3159,14 @@ typedef $$BensTableProcessedTableManager =
     ProcessedTableManager<
       _$AppDatabase,
       $BensTable,
-      Ben,
+      Bem,
       $$BensTableFilterComposer,
       $$BensTableOrderingComposer,
       $$BensTableAnnotationComposer,
       $$BensTableCreateCompanionBuilder,
       $$BensTableUpdateCompanionBuilder,
-      (Ben, BaseReferences<_$AppDatabase, $BensTable, Ben>),
-      Ben,
+      (Bem, BaseReferences<_$AppDatabase, $BensTable, Bem>),
+      Bem,
       PrefetchHooks Function()
     >;
 typedef $$ConferenciaSalasTableCreateCompanionBuilder =

@@ -34,8 +34,8 @@ void main() {
     // 3. Salas -> Conferência
     appRouter.go('/conferencia/sala-01');
     await tester.pump(const Duration(milliseconds: 100));
-    expect(find.text('12 de 18 bens conferidos'), findsOneWidget);
-    expect(find.text('Pipeline da Câmera (ML Kit)'), findsOneWidget);
+    expect(find.textContaining('bens conferidos'), findsOneWidget);
+    expect(find.text('Visor da Câmera Ativo'), findsOneWidget);
 
     // 4. Conferência -> Ficha do Bem
     appRouter.go('/bem/10023');

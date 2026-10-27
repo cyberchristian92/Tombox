@@ -6,19 +6,27 @@ Todas as bibliotecas adotadas possuem licenças de código aberto permissivas (M
 
 ---
 
-## 1. Bibliotecas Utilizadas na Etapa 0
+## 1. Bibliotecas Utilizadas (Etapas 0, 1 e 2)
 
 | Pacote | Versão | Licença | Finalidade |
 |---|---|---|---|
 | **Flutter SDK** | 3.47.8 | BSD-3-Clause | Framework multiplataforma base da aplicação móvel. |
 | **Dart SDK** | 3.13.7 | BSD-3-Clause | Linguagem de programação tipada e compilada AOT. |
-| **flutter_riverpod** | ^3.4.3 | MIT | Gerenciamento de estado declarativo, reativo e desacoplado. |
-| **go_router** | ^18.1.1 | BSD-3-Clause | Roteamento declarativo baseado em URLs e deep links com parâmetros de rota. |
-| **intl** | ^0.20.3 | BSD-3-Clause | Internacionalização, formatação de datas e números no padrão pt_BR. |
-| **uuid** | ^4.6.0 | MIT | Geração de identificadores únicos (UUID v4) para eventos imutáveis e aparelho. |
-| **crypto** | ^3.0.8 | BSD-3-Clause | Algoritmos criptográficos de hash (SHA-256) para a cadeia de eventos de auditoria. |
-| **cupertino_icons** | ^1.0.9 | MIT | Ícones adicionais no estilo visual iOS quando necessário. |
-| **flutter_lints** | ^6.0.0 | BSD-3-Clause | Conjunto oficial de boas práticas e análise estática recomendada para Flutter. |
+| **flutter_riverpod** | 3.4.3 | MIT | Gerenciamento de estado declarativo, reativo e desacoplado. |
+| **go_router** | 18.1.1 | BSD-3-Clause | Roteamento declarativo baseado em URLs e deep links com parâmetros de rota. |
+| **drift** / **drift_flutter** | 2.35.3 / 0.3.1 | MIT | Banco relacional SQLite local, tipado, com migrations e streams reativos. |
+| **sqlite3_flutter_libs** | 0.6.0 | MIT | Binários nativos do SQLite para Android, iOS e desktop. |
+| **file_picker** | 13.3.0 | MIT | Seleção segura de arquivos de entrada (CSV da unidade). |
+| **csv** | 8.0.0 | MIT | Leitura e escrita de CSV com suporte a delimitadores flexíveis e neutralização. |
+| **camera** | 0.12.1 | BSD-3-Clause | Feed e stream de quadros da câmera em tempo real para o pipeline de IA. |
+| **google_mlkit_text_recognition** | 0.17.1 | Apache-2.0 | OCR offline no aparelho para leitura de plaquetas metálicas. |
+| **google_mlkit_barcode_scanning** | 0.16.1 | Apache-2.0 | Leitura de códigos de barra e QR codes nos mesmos quadros do pipeline de câmera. |
+| **intl** | 0.20.3 | BSD-3-Clause | Internacionalização, formatação de datas e números no padrão pt_BR. |
+| **uuid** | 4.6.0 | MIT | Geração de identificadores únicos (UUID v4) para eventos imutáveis e aparelho. |
+| **crypto** | 3.0.8 | BSD-3-Clause | Algoritmos criptográficos de hash (SHA-256) para a cadeia de eventos de auditoria. |
+| **cupertino_icons** | 1.0.9 | MIT | Ícones adicionais no estilo visual iOS quando necessário. |
+| **flutter_lints** | 6.0.0 | BSD-3-Clause | Conjunto oficial de boas práticas e análise estática recomendada para Flutter. |
+| **build_runner** / **drift_dev** | 2.17.1 / 2.35.2 | BSD-3-Clause / MIT | Geradores de código estático para o Drift (apenas em desenvolvimento). |
 
 ---
 
@@ -26,12 +34,6 @@ Todas as bibliotecas adotadas possuem licenças de código aberto permissivas (M
 
 | Pacote | Licença | Finalidade / Etapa |
 |---|---|---|
-| **drift** / **sqlite3_flutter_libs** | MIT / Apache-2.0 | Banco de dados relacional SQLite local, tipado e com migrations seguras (Etapa 1). |
-| **file_picker** | MIT | Seleção segura de arquivos de entrada (CSV) da unidade (Etapa 1). |
-| **csv** | MIT | Leitura e escrita de arquivos CSV com suporte a delimitadores flexíveis e neutralização (Etapa 1 e 3). |
-| **camera** | BSD-3-Clause | Acesso ao feed da câmera em tempo real para o pipeline de visão computacional (Etapa 2). |
-| **google_mlkit_text_recognition** | Apache-2.0 | OCR offline executado diretamente no aparelho para leitura de plaquetas metálicas (Etapa 2). |
-| **google_mlkit_barcode_scanning** | Apache-2.0 | Leitura de códigos de barra e QR codes nos mesmos quadros do pipeline de câmera (Etapa 2). |
 | **share_plus** | BSD-3-Clause | Compartilhamento nativo de relatórios consolidados (CSV e pacotes JSON) (Etapa 3). |
 
 ---
