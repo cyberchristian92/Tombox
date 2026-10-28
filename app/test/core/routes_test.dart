@@ -48,8 +48,8 @@ void main() {
     appRouter.go('/exportacao');
     await tester.pump(const Duration(milliseconds: 100));
     await tester.pump(const Duration(milliseconds: 100));
-    expect(find.text('Resumo da Conferência'), findsOneWidget);
-    expect(find.text('Exportar CSV de Resultado (share_plus)'), findsOneWidget);
+    expect(find.text('Exportação em Planilha (CSV)'), findsOneWidget);
+    expect(find.text('Exportar Arquivo CSV'), findsOneWidget);
 
     // 6. Exportação -> Configurações
     appRouter.go('/configuracoes');

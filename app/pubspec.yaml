@@ -36,6 +36,8 @@ dependencies:
   qr_flutter: ^4.1.0
   flutter_image_compress: ^2.5.1
   nsd: ^5.0.1
+  pdf: ^3.13.1
+  signature: ^6.4.0
 
 dev_dependencies:
   flutter_test:

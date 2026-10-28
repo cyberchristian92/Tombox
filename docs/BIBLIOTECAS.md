@@ -32,6 +32,8 @@ Todas as bibliotecas adotadas possuem licenças de código aberto permissivas (M
 | **qr_flutter** | 4.1.0 | BSD-3-Clause | Renderização de QR codes no app para convites e identificação de membros. |
 | **flutter_image_compress** | 2.5.1 | MIT | Compressão nativa WebP qualidade 60 sem EXIF no Android. |
 | **nsd** | 5.0.1 | MIT | Descoberta mDNS local do serviço _tombox._tcp entre aparelhos. |
+| **pdf** | 3.13.1 | Apache-2.0 | Geração de termos de responsabilidade e relatórios consolidados em PDF. |
+| **signature** | 6.4.0 | BSD-3-Clause | Canvas para captura de assinatura manuscrita do responsável no fechamento da sala. |
 | **cupertino_icons** | 1.0.9 | MIT | Ícones adicionais no estilo visual iOS quando necessário. |
 | **flutter_lints** | 6.0.0 | BSD-3-Clause | Conjunto oficial de boas práticas e análise estática recomendada para Flutter. |
 | **build_runner** / **drift_dev** | 2.17.1 / 2.35.2 | BSD-3-Clause / MIT | Geradores de código estático para o Drift (apenas em desenvolvimento). |

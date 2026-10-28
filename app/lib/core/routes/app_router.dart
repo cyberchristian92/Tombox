@@ -11,6 +11,7 @@ import '../../features/importacao/screens/importacao_screen.dart';
 import '../../features/inicio/screens/inicio_screen.dart';
 import '../../features/mais/screens/mais_screen.dart';
 import '../../features/membros/screens/membros_screen.dart';
+import '../../features/salas/screens/fechamento_sala_screen.dart';
 import '../../features/salas/screens/locais_screen.dart';
 import '../../features/salas/screens/sala_detalhe_screen.dart';
 import '../../features/sincronizacao/screens/sincronizacao_screen.dart';
@@ -90,6 +91,14 @@ final appRouter = GoRouter(
       builder: (context, state) {
         final salaId = state.pathParameters['salaId'] ?? '';
         return SalaDetalheScreen(salaId: salaId);
+      },
+    ),
+    GoRoute(
+      path: '/locais/:salaId/fechamento',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (context, state) {
+        final salaId = state.pathParameters['salaId'] ?? '';
+        return FechamentoSalaScreen(salaId: salaId);
       },
     ),
     GoRoute(

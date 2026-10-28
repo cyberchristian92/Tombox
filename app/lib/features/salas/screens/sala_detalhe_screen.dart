@@ -212,10 +212,31 @@ class _SalaDetalheScreenState extends ConsumerState<SalaDetalheScreen> {
                 ),
                 child: SafeArea(
                   top: false,
-                  child: BotaoPrincipal(
-                    texto: 'Conferir esta sala',
-                    icone: Icons.qr_code_scanner_outlined,
-                    onPressed: () => context.push('/conferencia/${widget.salaId}'),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton.icon(
+                          icon: const Icon(Icons.assignment_turned_in_outlined, size: 18),
+                          label: const Text('Fechar sala'),
+                          style: OutlinedButton.styleFrom(
+                            side: BorderSide(color: corBorda),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                          ),
+                          onPressed: () => context.push('/locais/${widget.salaId}/fechamento'),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: BotaoPrincipal(
+                          texto: 'Conferir sala',
+                          icone: Icons.qr_code_scanner_outlined,
+                          onPressed: () => context.push('/conferencia/${widget.salaId}'),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
