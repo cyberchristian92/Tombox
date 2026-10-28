@@ -122,6 +122,57 @@ class SyncEngine {
     return eventosParaEnviar;
   }
 
+  /// Retorna todos os eventos locais persistidos ordenados por autor e sequência
+  static Future<List<EventoV2>> extrairTodosEventos(AppDatabase db) async {
+    final todosEventos = await (db.select(db.eventos)
+          ..orderBy([
+            (tbl) => OrderingTerm.asc(tbl.autor),
+            (tbl) => OrderingTerm.asc(tbl.seq),
+          ]))
+        .get();
+
+    final lista = <EventoV2>[];
+    for (final e in todosEventos) {
+      Map<String, String> parseConhecidos(String jsonStr) {
+        try {
+          final decoded = jsonDecode(jsonStr);
+          if (decoded is Map) {
+            return decoded.map((k, v) => MapEntry(k.toString(), v.toString()));
+          }
+        } catch (_) {}
+        return {};
+      }
+
+      Map<String, dynamic> parsePayload(String jsonStr) {
+        try {
+          final decoded = jsonDecode(jsonStr);
+          if (decoded is Map<String, dynamic>) return decoded;
+          if (decoded is Map) {
+            return decoded.map((k, v) => MapEntry(k.toString(), v));
+          }
+        } catch (_) {}
+        return {};
+      }
+
+      lista.add(
+        EventoV2(
+          id: e.id,
+          unidadeId: e.unidadeId,
+          tipo: e.tipo,
+          autor: e.autor,
+          seq: e.seq,
+          hashAnterior: e.hashAnterior,
+          conhecidos: parseConhecidos(e.conhecidos),
+          timestamp: EventoV2.normalizarTimestamp(e.timestamp),
+          payload: parsePayload(e.payload),
+          hash: e.hash,
+          assinatura: e.assinatura,
+        ),
+      );
+    }
+    return lista;
+  }
+
   /// Aplica uma lista de eventos recebidos externamente de forma estrita e idempotente
   static Future<ResultadoSincronizacao> aplicarEventos(
     AppDatabase db,

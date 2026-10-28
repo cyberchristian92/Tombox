@@ -140,8 +140,8 @@ class LinhaDoTempo extends StatelessWidget {
                               const SizedBox(width: 4),
                               Text(
                                 itens[i].assinaturaValida == true
-                                    ? 'Assinatura Ed25519 verificada'
-                                    : 'Assinatura não verificada',
+                                    ? 'assinatura verificada'
+                                    : 'assinatura inválida',
                                 style: TextStyle(
                                   fontFamily: AppTokens.fontePadrao,
                                   fontSize: 11,

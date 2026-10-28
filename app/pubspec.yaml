@@ -34,6 +34,8 @@ dependencies:
   shelf: ^1.4.3
   archive: ^4.5.2
   qr_flutter: ^4.1.0
+  flutter_image_compress: ^2.5.1
+  nsd: ^5.0.1
 
 dev_dependencies:
   flutter_test:

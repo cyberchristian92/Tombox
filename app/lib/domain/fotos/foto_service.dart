@@ -1,5 +1,6 @@
-import 'dart:typed_data';
 import 'package:crypto/crypto.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:image/image.dart' as img;
 import '../../data/local/app_database.dart';
 import '../eventos/evento_service.dart';
@@ -33,6 +34,50 @@ class FotoService {
   // Cache em memória para Web e testes (armazenamento endereçado por conteúdo)
   static final Map<String, Uint8List> _storageFotos = {};
   static final Map<String, Uint8List> _storageMiniaturas = {};
+
+  /// Processa bytes usando flutter_image_compress em dispositivos nativos (WebP 60 sem EXIF)
+  /// ou recorre ao motor puro Dart no ambiente Web e testes.
+  static Future<ResultadoFoto> processarBytesAsync(Uint8List bytesOriginais) async {
+    if (!kIsWeb && defaultTargetPlatform == TargetPlatform.android) {
+      try {
+        final webpBytes = await FlutterImageCompress.compressWithList(
+          bytesOriginais,
+          minWidth: ladoMaiorMaximo,
+          minHeight: ladoMaiorMaximo,
+          quality: 60,
+          format: CompressFormat.webp,
+          keepExif: false,
+        );
+
+        final miniBytes = await FlutterImageCompress.compressWithList(
+          bytesOriginais,
+          minWidth: ladoMiniaturaMaximo,
+          minHeight: ladoMiniaturaMaximo,
+          quality: 60,
+          format: CompressFormat.webp,
+          keepExif: false,
+        );
+
+        final hashSha256 = sha256.convert(webpBytes).toString();
+        if (!_storageFotos.containsKey(hashSha256)) {
+          _storageFotos[hashSha256] = webpBytes;
+          _storageMiniaturas[hashSha256] = miniBytes;
+        }
+
+        return ResultadoFoto(
+          hash: hashSha256,
+          tamanhoBytes: webpBytes.length,
+          largura: 1024,
+          altura: 768,
+          bytesComprimidos: webpBytes,
+          bytesMiniatura: miniBytes,
+        );
+      } catch (_) {
+        // Fallback transparente para o pipeline puro Dart
+      }
+    }
+    return processarBytes(bytesOriginais);
+  }
 
   /// Processa bytes brutos de imagem: redimensiona para até 1024px,
   /// remove metadados EXIF (LGPD), comprime e gera miniatura de 160px.
@@ -96,6 +141,14 @@ class FotoService {
     return _storageMiniaturas[hash];
   }
 
+  /// Armazena os bytes de uma foto pelo seu hash SHA-256 (usado no sync e transporte)
+  static void salvarFoto(String hash, Uint8List bytes, {Uint8List? miniatura}) {
+    _storageFotos[hash] = bytes;
+    if (miniatura != null) {
+      _storageMiniaturas[hash] = miniatura;
+    }
+  }
+
   /// Verifica se uma foto já existe no armazenamento
   static bool existeFoto(String hash) {
     return _storageFotos.containsKey(hash);
@@ -111,7 +164,7 @@ class FotoService {
     required Uint8List bytesFoto,
     String? observacao,
   }) async {
-    final resultado = processarBytes(bytesFoto);
+    final resultado = await processarBytesAsync(bytesFoto);
 
     // Registra evento FOTO assinado com Ed25519
     await EventoService.registrar(

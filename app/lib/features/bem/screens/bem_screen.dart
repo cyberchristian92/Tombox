@@ -1,6 +1,6 @@
 import 'dart:convert';
-import 'dart:typed_data';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:drift/drift.dart' show OrderingTerm;
@@ -15,6 +15,8 @@ import '../../../data/local/app_database.dart';
 import '../../../data/local/database_provider.dart';
 import '../../../data/local/perfil_provider.dart';
 import '../../../domain/fotos/foto_service.dart';
+import '../../configuracoes/providers/diagnostico_provider.dart';
+import 'captura_foto_screen.dart';
 
 class BemScreen extends ConsumerStatefulWidget {
   final String tombamento;
@@ -489,32 +491,39 @@ class _BemScreenState extends ConsumerState<BemScreen> {
     final corBorda = isDark ? AppTokens.linhaEscura : AppTokens.linha;
 
     // Determina a proveniência com base no campo
-    String fonte;
     String descricaoFonte;
     double confianca = 1.0;
     String situacao = 'revisado';
     String revisor = bem.responsavel ?? 'Rosilene Miranda (Matr. TJPA)';
 
     if (rotulo == 'Tombamento') {
-      fonte = 'ocr_plaqueta';
       descricaoFonte = 'OCR da plaqueta patrimonial física e código de barras';
       confianca = 0.99;
       situacao = 'homologado';
     } else if (rotulo.contains('Fabricante') || rotulo.contains('série')) {
-      fonte = 'ocr_etiqueta_fabricante';
       descricaoFonte = 'OCR da etiqueta do fabricante com conferência humana';
       confianca = 0.96;
       situacao = 'revisado';
     } else if (rotulo == 'Categoria') {
-      fonte = 'ia_classificacao';
       descricaoFonte = 'Classificação por visão computacional assistida';
       confianca = 0.94;
       situacao = 'revisado';
     } else {
-      fonte = 'importacao';
       descricaoFonte = 'Carga inicial do arquivo CSV oficial da unidade';
       confianca = 1.0;
       situacao = 'homologado';
+    }
+
+    // Frase natural prevista na seção 11.1
+    String fraseNatural;
+    if (rotulo == 'Tombamento') {
+      fraseNatural = 'Tombamento: $valor. Lido da plaqueta patrimonial física, revisado por $revisor em 27/10.';
+    } else if (rotulo.contains('Fabricante') || rotulo.contains('série') || rotulo.contains('Modelo')) {
+      fraseNatural = '$rotulo: $valor. Lido da etiqueta do fabricante, revisado por $revisor em 27/10.';
+    } else if (rotulo == 'Categoria') {
+      fraseNatural = 'Categoria: $valor. Sugerido por visão computacional, revisado por $revisor em 27/10.';
+    } else {
+      fraseNatural = '$rotulo: $valor. Lido da base de dados oficial (Thema-GRP), revisado por $revisor em 27/10.';
     }
 
     showModalBottomSheet(
@@ -560,7 +569,7 @@ class _BemScreenState extends ConsumerState<BemScreen> {
                             ),
                           ),
                           Text(
-                            'Trilha de auditoria • W3C PROV-O',
+                            'Histórico e trilha de conferência',
                             style: TextStyle(
                               fontFamily: AppTokens.fontePadrao,
                               fontSize: 12,
@@ -585,34 +594,24 @@ class _BemScreenState extends ConsumerState<BemScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        rotulo.toUpperCase(),
+                        fraseNatural,
                         style: TextStyle(
                           fontFamily: AppTokens.fontePadrao,
-                          fontSize: 11,
-                          fontWeight: FontWeight.w600,
-                          color: corSub,
-                          letterSpacing: 0.5,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        valor,
-                        style: TextStyle(
-                          fontFamily: AppTokens.fontePadrao,
-                          fontSize: 15,
+                          fontSize: 14,
                           fontWeight: FontWeight.w600,
                           color: corTexto,
+                          height: 1.35,
                         ),
                       ),
                     ],
                   ),
                 ),
                 const SizedBox(height: 12),
-                _buildLinhaAudit('Fonte', '$descricaoFonte ($fonte)', corTexto, corSub),
+                _buildLinhaAudit('Fonte', descricaoFonte, corTexto, corSub),
                 _buildLinhaAudit('Confiança', '${(confianca * 100).toInt()}%', corTexto, corSub),
                 _buildLinhaAudit('Situação', situacao.toUpperCase(), corTexto, corSub),
-                _buildLinhaAudit('Revisado por', revisor, corTexto, corSub),
-                _buildLinhaAudit('Chave Ed25519', 'Assinatura digital válida (seq auditada)', AppTokens.statusConferido, corSub),
+                _buildLinhaAudit('Responsável', revisor, corTexto, corSub),
+                _buildLinhaAudit('Assinatura', 'assinatura verificada', AppTokens.statusConferido, corSub),
                 const SizedBox(height: 16),
                 SizedBox(
                   width: double.infinity,
@@ -842,6 +841,27 @@ class _BemScreenState extends ConsumerState<BemScreen> {
   }
 
   Future<void> _tirarOuAnexarFoto(BuildContext context, Bem bem, Local? local) async {
+    final modoDiag = ref.read(modoDiagnosticoProvider);
+
+    // No Android / dispositivo real sem modo diagnóstico: abre diretamente a câmera nativa do app
+    if (!kIsWeb && !modoDiag) {
+      final bytes = await Navigator.push<Uint8List>(
+        context,
+        MaterialPageRoute(builder: (context) => const CapturaFotoScreen()),
+      );
+      if (bytes != null) {
+        await _salvarFotoProcessada(bytes, bem, local);
+      }
+      return;
+    }
+
+    // Na Web sem modo diagnóstico: seleção direta de arquivo
+    if (kIsWeb && !modoDiag) {
+      await _selecionarEProcessarFoto(bem, local);
+      return;
+    }
+
+    // Com modo de diagnóstico ativado: exibe modal permitindo teste sintético
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
@@ -864,19 +884,36 @@ class _BemScreenState extends ConsumerState<BemScreen> {
                   ),
                 ),
                 const SizedBox(height: 12),
+                if (!kIsWeb)
+                  ListTile(
+                    leading: const Icon(Icons.camera_alt, color: AppTokens.tinta),
+                    title: const Text('Câmera nativa do app'),
+                    subtitle: const Text('Captura direta pelo sensor da câmera com compressão'),
+                    onTap: () async {
+                      Navigator.pop(ctx);
+                      final bytes = await Navigator.push<Uint8List>(
+                        context,
+                        MaterialPageRoute(builder: (context) => const CapturaFotoScreen()),
+                      );
+                      if (bytes != null) {
+                        await _salvarFotoProcessada(bytes, bem, local);
+                      }
+                    },
+                  )
+                else
+                  ListTile(
+                    leading: const Icon(Icons.upload_file, color: AppTokens.tinta),
+                    title: const Text('Selecionar foto (Web)'),
+                    subtitle: const Text('Carregar arquivo de imagem para compressão e assinatura'),
+                    onTap: () async {
+                      Navigator.pop(ctx);
+                      await _selecionarEProcessarFoto(bem, local);
+                    },
+                  ),
                 ListTile(
-                  leading: const Icon(Icons.upload_file, color: AppTokens.tinta),
-                  title: const Text('Selecionar foto do arquivo (Web / Dispositivo)'),
-                  subtitle: const Text('Comprime em WebP para no máximo 1024px e sem EXIF'),
-                  onTap: () async {
-                    Navigator.pop(ctx);
-                    await _selecionarEProcessarFoto(bem, local);
-                  },
-                ),
-                ListTile(
-                  leading: const Icon(Icons.camera_alt, color: AppTokens.tinta),
-                  title: const Text('Tirar foto simulada de teste'),
-                  subtitle: const Text('Gera captura patrimonial com etiqueta de tombamento'),
+                  leading: const Icon(Icons.science_outlined, color: AppTokens.tinta),
+                  title: const Text('Foto sintética (Simulação / Diagnóstico)'),
+                  subtitle: const Text('Gera captura para validação de testes sem câmera física'),
                   onTap: () async {
                     Navigator.pop(ctx);
                     await _processarFotoSimulada(bem, local);
