@@ -301,7 +301,11 @@ class CameraPipeline {
 
   Future<void> dispose() async {
     await _streamController.close();
-    await _textRecognizer.close();
-    await _barcodeScanner.close();
+    try {
+      await _textRecognizer.close();
+    } catch (_) {}
+    try {
+      await _barcodeScanner.close();
+    } catch (_) {}
   }
 }

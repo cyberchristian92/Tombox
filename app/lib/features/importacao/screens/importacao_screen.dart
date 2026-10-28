@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../core/widgets/app_scaffold.dart';
+import '../../../core/theme/app_tokens.dart';
+import '../../../core/widgets/botao_principal.dart';
+import '../../../core/widgets/lista_dados.dart';
 import '../../../data/importacao/importacao_service.dart';
 
 class ImportacaoScreen extends ConsumerWidget {
@@ -10,187 +12,143 @@ class ImportacaoScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     final importState = ref.watch(importacaoProvider);
     final relatorio = importState.relatorioAtivo;
 
-    return AppScaffold(
-      title: 'Importação de CSV',
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Icon(
-                          relatorio != null && relatorio.temErros
-                              ? Icons.warning_amber
-                              : Icons.check_circle_outline,
-                          color: relatorio != null && relatorio.temErros
-                              ? Colors.orange
-                              : Colors.green,
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          'Relatório de Qualidade do CSV',
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
+    final corFundoBloco = isDark ? AppTokens.brancoEscuro : AppTokens.branco;
+    final corBorda = isDark ? AppTokens.linhaEscura : AppTokens.linha;
+    final corTexto = isDark ? AppTokens.grafiteEscuro : AppTokens.grafite;
+    final corTextoSec = isDark ? AppTokens.cinzaEscuro : AppTokens.cinza;
+
+    final dadosResumo = <(String, String)>[
+      ('Unidade', relatorio?.unidadeNome ?? 'Demonstração TJPA'),
+      ('Linhas lidas', relatorio != null ? '${relatorio.totalLinhasLidas}' : '302'),
+      ('Bens válidos', relatorio != null ? '${relatorio.bensValidos}' : '300'),
+      ('Salas', relatorio != null ? '${relatorio.totalSalas}' : '15'),
+      ('Duplicados', relatorio != null ? '${relatorio.duplicadosAtualizados}' : '2 atualizados'),
+      ('Normalizações', relatorio != null ? '${relatorio.avisos.length} linhas ajustadas' : '4 linhas ajustadas'),
+      ('Erros críticos', relatorio != null ? '${relatorio.erros.length} linhas' : '0 linhas descartadas'),
+    ];
+
+    return Scaffold(
+      backgroundColor: isDark ? AppTokens.papelEscuro : AppTokens.papel,
+      appBar: AppBar(
+        title: const Text('Relatório de Importação'),
+        backgroundColor: isDark ? AppTokens.barraEscura : AppTokens.tinta,
+        foregroundColor: AppTokens.branco,
+      ),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppTokens.paddingLateral,
+            vertical: AppTokens.s20,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // Cabeçalho da Unidade e Qualidade
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Icon(
+                    relatorio != null && relatorio.temErros
+                        ? Icons.warning_amber_rounded
+                        : Icons.check_circle_outline,
+                    color: relatorio != null && relatorio.temErros
+                        ? AppTokens.statusPendente
+                        : AppTokens.statusConferido,
+                    size: 24,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Importação Concluída',
+                    style: TextStyle(
+                      fontFamily: AppTokens.fonteTitulo,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      color: corTexto,
                     ),
-                    const Divider(height: 24),
-                    _buildReportRow(
-                      'Unidade carregada:',
-                      relatorio?.unidadeNome ?? 'Demonstração TJPA',
-                    ),
-                    _buildReportRow(
-                      'Total de linhas lidas:',
-                      relatorio != null ? '${relatorio.totalLinhasLidas}' : '302',
-                    ),
-                    _buildReportRow(
-                      'Bens válidos reconhecidos:',
-                      relatorio != null ? '${relatorio.bensValidos}' : '300',
-                    ),
-                    _buildReportRow(
-                      'Salas identificadas:',
-                      relatorio != null ? '${relatorio.totalSalas}' : '15',
-                    ),
-                    _buildReportRow(
-                      'Duplicados atualizados:',
-                      relatorio != null ? '${relatorio.duplicadosAtualizados}' : '2',
-                    ),
-                    _buildReportRow(
-                      'Avisos de normalização:',
-                      relatorio != null ? '${relatorio.avisos.length} linhas' : '4 linhas ajustadas',
-                    ),
-                    _buildReportRow(
-                      'Erros críticos descartados:',
-                      relatorio != null ? '${relatorio.erros.length} linhas' : '0 linhas',
-                    ),
-                  ],
+                  ),
+                ],
+              ),
+              const SizedBox(height: 6),
+              Text(
+                'A planilha foi processada e os bens foram distribuídos nas salas da unidade. A normalização de tombamentos substituiu caracteres especiais e unificou o formato oficial.',
+                style: TextStyle(
+                  fontFamily: AppTokens.fontePadrao,
+                  fontSize: 14,
+                  color: corTextoSec,
+                  height: 1.35,
                 ),
               ),
-            ),
-            const SizedBox(height: 16),
-            Card(
-              color: theme.colorScheme.surfaceContainerHighest,
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
+
+              const SizedBox(height: 16),
+
+              // Bloco de Dados com ListaDados v2
+              Container(
+                decoration: BoxDecoration(
+                  color: corFundoBloco,
+                  borderRadius: BorderRadius.circular(AppTokens.raioBloco),
+                  border: Border.all(color: corBorda, width: 1),
+                ),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                child: ListaDados(dados: dadosResumo),
+              ),
+
+              const SizedBox(height: 16),
+
+              // Texto corrido de formato detectado
+              Container(
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: corFundoBloco,
+                  borderRadius: BorderRadius.circular(AppTokens.raioBloco),
+                  border: Border.all(color: corBorda, width: 1),
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Detecção Automática de Formato',
-                      style: theme.textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
+                      'Formato do arquivo',
+                      style: TextStyle(
+                        fontFamily: AppTokens.fontePadrao,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: corTexto,
                       ),
                     ),
-                    const SizedBox(height: 8),
-                    Text('• Separador: ${relatorio?.separadorDetectado == '\t' ? 'Tabulação' : relatorio?.separadorDetectado ?? 'Ponto e vírgula (;)'}'),
-                    Text('• Codificação: ${relatorio?.codificacaoDetectada ?? 'UTF-8'}'),
-                    const Text('• Coluna de Local: Comarca / Prédio / Andar / Sala'),
-                    const Text('• Normalização de tombamento: Ativa (O→0, pontuação removida)'),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Separador ${relatorio?.separadorDetectado == '\t' ? 'por tabulação' : 'ponto e vírgula (;)'}, codificação ${relatorio?.codificacaoDetectada ?? 'UTF-8'}. Hierarquia de locais estruturada em Comarca, Prédio, Andar e Sala.',
+                      style: TextStyle(
+                        fontFamily: AppTokens.fontePadrao,
+                        fontSize: 13,
+                        color: corTextoSec,
+                        height: 1.3,
+                      ),
+                    ),
                   ],
                 ),
               ),
-            ),
-            if (relatorio != null && relatorio.itens.isNotEmpty) ...[
-              const SizedBox(height: 16),
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Detalhes e Ocorrências nas Linhas',
-                        style: theme.textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      ...relatorio.itens.take(10).map((item) {
-                        final isErro = item.tipo == 'ERRO';
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 4.0),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                                decoration: BoxDecoration(
-                                  color: isErro ? Colors.red.withAlpha(40) : Colors.amber.withAlpha(40),
-                                  borderRadius: BorderRadius.circular(4),
-                                ),
-                                child: Text(
-                                  'Linha ${item.linha}',
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.bold,
-                                    color: isErro ? Colors.red : Colors.orange.shade800,
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: Text(
-                                  item.mensagem,
-                                  style: const TextStyle(fontSize: 13),
-                                ),
-                              ),
-                            ],
-                          ),
-                        );
-                      }),
-                      if (relatorio.itens.length > 10)
-                        Padding(
-                          padding: const EdgeInsets.only(top: 8.0),
-                          child: Text(
-                            '... e mais ${relatorio.itens.length - 10} ocorrências verificadas com sucesso.',
-                            style: const TextStyle(fontSize: 12, fontStyle: FontStyle.italic),
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
+
+              const SizedBox(height: 24),
+
+              // Botões v2 sem setas
+              BotaoPrincipal(
+                texto: 'Ver salas',
+                icone: Icons.meeting_room_outlined,
+                onPressed: () => context.go('/locais'),
+              ),
+              const SizedBox(height: 10),
+              BotaoPrincipal(
+                texto: 'Voltar para Início',
+                secundario: true,
+                onPressed: () => context.go('/'),
               ),
             ],
-            const SizedBox(height: 24),
-            ElevatedButton.icon(
-              icon: const Icon(Icons.arrow_forward),
-              label: const Text('Continuar para Lista de Salas'),
-              onPressed: () => context.push('/salas'),
-            ),
-            const SizedBox(height: 12),
-            OutlinedButton(
-              child: const Text('Voltar para Início'),
-              onPressed: () => context.go('/'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildReportRow(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(label, style: const TextStyle(fontSize: 14)),
-          Text(
-            value,
-            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
           ),
-        ],
+        ),
       ),
     );
   }

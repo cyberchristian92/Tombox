@@ -40,19 +40,22 @@ class Abas extends StatelessWidget {
           bottom: BorderSide(color: corDivisoria, width: 1),
         ),
       ),
-      child: Row(
-        children: [
-          for (int i = 0; i < abas.length; i++)
-            Expanded(
-              child: _buildAba(
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        physics: const BouncingScrollPhysics(),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            for (int i = 0; i < abas.length; i++)
+              _buildAba(
                 aba: abas[i],
                 ativo: i == indiceAtivo,
                 corAtiva: corAtiva,
                 corInativa: corInativa,
                 onTap: () => onMudou(i),
               ),
-            ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -66,13 +69,13 @@ class Abas extends StatelessWidget {
   }) {
     final corTexto = ativo ? corAtiva : corInativa;
     final texto = aba.contagem != null
-        ? '${aba.rotulo} (${aba.contagem})'
+        ? '${aba.rotulo} ${aba.contagem}'
         : aba.rotulo;
 
     return InkWell(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         decoration: BoxDecoration(
           border: Border(
             bottom: BorderSide(
@@ -85,7 +88,6 @@ class Abas extends StatelessWidget {
           child: Text(
             texto,
             maxLines: 1,
-            overflow: TextOverflow.ellipsis,
             style: TextStyle(
               fontFamily: AppTokens.fontePadrao,
               fontSize: 14,

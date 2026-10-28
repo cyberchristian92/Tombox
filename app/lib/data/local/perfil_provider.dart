@@ -33,10 +33,18 @@ class PerfilUsuario {
 class PerfilNotifier extends Notifier<PerfilUsuario> {
   @override
   PerfilUsuario build() => const PerfilUsuario(
-        nome: 'Rosilene Silva',
-        matricula: 'TJ-34587',
+        nome: '',
+        matricula: '',
         papel: 'conferente',
       );
+
+  void carregarPerfilDemonstracao() {
+    state = const PerfilUsuario(
+      nome: 'Rosilene Silva',
+      matricula: 'TJ-34587',
+      papel: 'conferente',
+    );
+  }
 
   void atualizar({String? nome, String? matricula, String? papel}) {
     state = state.copyWith(

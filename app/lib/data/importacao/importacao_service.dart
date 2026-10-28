@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/importacao/csv_importer.dart';
 import '../../domain/importacao/relatorio_importacao.dart';
 import '../local/database_provider.dart';
+import '../local/perfil_provider.dart';
+import '../local/queries_provider.dart';
 
 class ImportacaoState {
   final bool processando;
@@ -53,6 +55,10 @@ class ImportacaoService extends Notifier<ImportacaoState> {
         salasConferencia: dados.salas,
       );
 
+      // Define a unidade ativa e perfil de demonstração
+      ref.read(unidadeAtivaIdProvider.notifier).state = dados.unidade.id.value;
+      ref.read(perfilProvider.notifier).carregarPerfilDemonstracao();
+
       state = state.copyWith(
         processando: false,
         relatorioAtivo: dados.relatorio,
@@ -84,6 +90,9 @@ class ImportacaoService extends Notifier<ImportacaoState> {
         listaBens: dados.bens,
         salasConferencia: dados.salas,
       );
+
+      // Define a unidade ativa
+      ref.read(unidadeAtivaIdProvider.notifier).state = dados.unidade.id.value;
 
       state = state.copyWith(
         processando: false,

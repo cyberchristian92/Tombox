@@ -117,8 +117,10 @@ class InicioScreen extends ConsumerWidget {
     final corFundoBloco = isDark ? AppTokens.brancoEscuro : AppTokens.branco;
     final corBorda = isDark ? AppTokens.linhaEscura : AppTokens.linha;
     final corTexto = isDark ? AppTokens.grafiteEscuro : AppTokens.grafite;
+    final corTextoSec = isDark ? AppTokens.cinzaEscuro : AppTokens.cinza;
 
     return Scaffold(
+      backgroundColor: isDark ? AppTokens.papelEscuro : AppTokens.papel,
       body: SafeArea(
         child: RefreshIndicator(
           onRefresh: () async {
@@ -145,11 +147,13 @@ class InicioScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 4),
               Text(
-                '$totalSalas salas e ${Formatador.numero(totalBens)} bens. Conferência iniciada em $dataTexto.',
-                style: const TextStyle(
+                conferidos > 0
+                    ? '$totalSalas salas e ${Formatador.numero(totalBens)} bens. Conferência iniciada em $dataTexto.'
+                    : '$totalSalas salas e ${Formatador.numero(totalBens)} bens. Nenhuma sala conferida ainda.',
+                style: TextStyle(
                   fontFamily: AppTokens.fontePadrao,
                   fontSize: 15,
-                  color: AppTokens.cinza,
+                  color: corTextoSec,
                 ),
               ),
 
@@ -189,10 +193,10 @@ class InicioScreen extends ConsumerWidget {
                     children: [
                       Text(
                         ehContinuar ? 'Em andamento' : 'Próxima sala',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontFamily: AppTokens.fontePadrao,
                           fontSize: 13,
-                          color: AppTokens.cinza,
+                          color: corTextoSec,
                         ),
                       ),
                       const SizedBox(height: 2),
@@ -208,10 +212,10 @@ class InicioScreen extends ConsumerWidget {
                       const SizedBox(height: 2),
                       Text(
                         '${salaAlvo.predioEAndar}. ${salaAlvo.bensLidos} de ${salaAlvo.totalBens} bens conferidos.',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontFamily: AppTokens.fontePadrao,
                           fontSize: 14,
-                          color: AppTokens.cinza,
+                          color: corTextoSec,
                         ),
                       ),
                       const SizedBox(height: 12),

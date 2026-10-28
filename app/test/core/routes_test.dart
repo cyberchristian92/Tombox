@@ -24,7 +24,7 @@ void main() {
     // 1. Início -> Importação
     appRouter.go('/importacao');
     await tester.pump(const Duration(milliseconds: 100));
-    expect(find.text('Relatório de Qualidade do CSV'), findsOneWidget);
+    expect(find.text('Relatório de Importação'), findsOneWidget);
 
     // 2. Importação -> Locais (/salas redireciona para /locais)
     appRouter.go('/salas');
