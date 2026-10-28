@@ -10,6 +10,7 @@ import '../../features/inicio/screens/inicio_screen.dart';
 import '../../features/mais/screens/mais_screen.dart';
 import '../../features/salas/screens/locais_screen.dart';
 import '../../features/salas/screens/sala_detalhe_screen.dart';
+import '../../features/sincronizacao/screens/sincronizacao_screen.dart';
 import '../widgets/app_shell.dart';
 
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -126,6 +127,11 @@ final appRouter = GoRouter(
       path: '/configuracoes',
       parentNavigatorKey: _rootNavigatorKey,
       builder: (context, state) => const ConfiguracoesScreen(),
+    ),
+    GoRoute(
+      path: '/sincronizacao',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (context, state) => const SincronizacaoScreen(),
     ),
     // Redirecionamento de compatibilidade
     GoRoute(

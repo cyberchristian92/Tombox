@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:crypto/crypto.dart';
+import 'package:cryptography/cryptography.dart';
 import '../identidade/identidade_service.dart';
 
 /// Tipos oficiais de evento na Arquitetura v2
@@ -70,6 +71,15 @@ class EventoV2 {
     return obj;
   }
 
+  /// Normaliza timestamp para precisão de segundos em UTC, garantindo determinismo
+  /// entre serializações no SQLite (Drift), JSON e transmissão de rede.
+  static DateTime normalizarTimestamp(DateTime dt) {
+    return DateTime.fromMillisecondsSinceEpoch(
+      (dt.toUtc().millisecondsSinceEpoch ~/ 1000) * 1000,
+      isUtc: true,
+    );
+  }
+
   /// Gera a representação canônica em JSON (sem hash e sem assinatura)
   static String gerarJsonCanonico({
     required String id,
@@ -89,7 +99,7 @@ class EventoV2 {
       'id': id,
       'payload': payload,
       'seq': seq,
-      'timestamp': timestamp.toUtc().toIso8601String(),
+      'timestamp': normalizarTimestamp(timestamp).toIso8601String(),
       'tipo': tipo,
       'unidade_id': unidadeId,
     };
@@ -117,7 +127,7 @@ class EventoV2 {
       seq: seq,
       hashAnterior: hashAnterior,
       conhecidos: conhecidos,
-      timestamp: timestamp,
+      timestamp: normalizarTimestamp(timestamp),
       payload: payload,
     );
     return sha256.convert(utf8.encode(jsonCanonico)).toString();
@@ -134,8 +144,9 @@ class EventoV2 {
     required Map<String, String> conhecidos,
     DateTime? timestamp,
     required Map<String, dynamic> payload,
+    SimpleKeyPair? keyPair,
   }) async {
-    final agora = (timestamp ?? DateTime.now()).toUtc();
+    final agora = normalizarTimestamp(timestamp ?? DateTime.now());
     final hashCalculado = calcularHash(
       id: id,
       unidadeId: unidadeId,
@@ -148,7 +159,10 @@ class EventoV2 {
       payload: payload,
     );
 
-    final assinaturaCalculada = await IdentidadeService.assinar(hashCalculado);
+    final assinaturaCalculada = await IdentidadeService.assinar(
+      hashCalculado,
+      keyPair: keyPair,
+    );
 
     return EventoV2(
       id: id,
@@ -219,7 +233,7 @@ class EventoV2 {
       seq: (map['seq'] as num).toInt(),
       hashAnterior: map['hash_anterior'] as String? ?? map['hashAnterior'] as String? ?? hashInicial,
       conhecidos: parseConhecidos(map['conhecidos']),
-      timestamp: DateTime.parse(map['timestamp'] as String),
+      timestamp: normalizarTimestamp(DateTime.parse(map['timestamp'].toString())),
       payload: parsePayload(map['payload']),
       hash: map['hash'] as String,
       assinatura: map['assinatura'] as String,

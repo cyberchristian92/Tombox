@@ -26,7 +26,7 @@ packages:
     source: hosted
     version: "2.1.2"
   archive:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: archive
       sha256: "0d58d1fa1fddf6588251ccf2819f3fb3b6d0452c1b2813ac7413a05592bfbefe"
@@ -846,7 +846,7 @@ packages:
     source: hosted
     version: "3.4.3"
   shelf:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: shelf
       sha256: e75e9cf311d7fd712048038cc17c25199c38536c20330d53e7db058b543d5a48

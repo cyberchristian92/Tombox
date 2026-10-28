@@ -250,12 +250,18 @@ class MaisScreen extends ConsumerWidget {
                     corTexto: corTexto,
                     corTextoSec: corTextoSec,
                     corBorda: corBorda,
+                    temDivisoria: true,
+                    onTap: () => context.push('/exportacao'),
+                  ),
+                  _buildLinhaItem(
+                    icone: Icons.sync_outlined,
+                    titulo: 'Sincronização P2P',
+                    subtitulo: 'Troca em rede local e pacote .tombox offline',
+                    corTexto: corTexto,
+                    corTextoSec: corTextoSec,
+                    corBorda: corBorda,
                     temDivisoria: false,
-                    onTap: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Exportação de dados')),
-                      );
-                    },
+                    onTap: () => context.push('/sincronizacao'),
                   ),
                 ],
               ),

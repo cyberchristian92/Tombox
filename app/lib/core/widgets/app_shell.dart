@@ -78,7 +78,10 @@ class AppShell extends ConsumerWidget {
             tooltip: 'Buscar Bens',
             onPressed: () => context.go('/bens'),
           ),
-          const IndicadorSync(estado: EstadoSync.sincronizado),
+          IndicadorSync(
+            estado: EstadoSync.sincronizado,
+            onTap: () => context.push('/sincronizacao'),
+          ),
           const SizedBox(width: 8),
         ],
       ),

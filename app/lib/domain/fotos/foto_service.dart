@@ -137,7 +137,7 @@ class FotoService {
 
   /// Limpa dados de teste
   static void limparStorageParaTestes() {
-    _storageFotos.clear;
-    _storageMiniaturas.clear;
+    _storageFotos.clear();
+    _storageMiniaturas.clear();
   }
 }
