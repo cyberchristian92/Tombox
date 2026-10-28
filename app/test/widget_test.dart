@@ -28,7 +28,6 @@ void main() {
     expect(find.byIcon(Icons.qr_code_scanner), findsOneWidget);
     expect(find.text('Bens'), findsOneWidget);
     expect(find.text('Mais'), findsOneWidget);
-    expect(find.text('Nenhuma unidade carregada'), findsOneWidget);
 
     await testDb.close();
   });

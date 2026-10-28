@@ -1744,6 +1744,18 @@ class $EventosTable extends Eventos with TableInfo<$EventosTable, Evento> {
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _unidadeIdMeta = const VerificationMeta(
+    'unidadeId',
+  );
+  @override
+  late final GeneratedColumn<String> unidadeId = GeneratedColumn<String>(
+    'unidade_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('unidade_demo'),
+  );
   static const VerificationMeta _seqMeta = const VerificationMeta('seq');
   @override
   late final GeneratedColumn<int> seq = GeneratedColumn<int>(
@@ -1761,6 +1773,16 @@ class $EventosTable extends Eventos with TableInfo<$EventosTable, Evento> {
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+  );
+  static const VerificationMeta _autorMeta = const VerificationMeta('autor');
+  @override
+  late final GeneratedColumn<String> autor = GeneratedColumn<String>(
+    'autor',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('local_device'),
   );
   static const VerificationMeta _tombamentoMeta = const VerificationMeta(
     'tombamento',
@@ -1851,6 +1873,18 @@ class $EventosTable extends Eventos with TableInfo<$EventosTable, Evento> {
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _conhecidosMeta = const VerificationMeta(
+    'conhecidos',
+  );
+  @override
+  late final GeneratedColumn<String> conhecidos = GeneratedColumn<String>(
+    'conhecidos',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('{}'),
+  );
   static const VerificationMeta _hashMeta = const VerificationMeta('hash');
   @override
   late final GeneratedColumn<String> hash = GeneratedColumn<String>(
@@ -1860,11 +1894,25 @@ class $EventosTable extends Eventos with TableInfo<$EventosTable, Evento> {
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _assinaturaMeta = const VerificationMeta(
+    'assinatura',
+  );
+  @override
+  late final GeneratedColumn<String> assinatura = GeneratedColumn<String>(
+    'assinatura',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
+    unidadeId,
     seq,
     tipo,
+    autor,
     tombamento,
     localId,
     aparelhoId,
@@ -1873,7 +1921,9 @@ class $EventosTable extends Eventos with TableInfo<$EventosTable, Evento> {
     payload,
     hashFoto,
     hashAnterior,
+    conhecidos,
     hash,
+    assinatura,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -1892,6 +1942,12 @@ class $EventosTable extends Eventos with TableInfo<$EventosTable, Evento> {
     } else if (isInserting) {
       context.missing(_idMeta);
     }
+    if (data.containsKey('unidade_id')) {
+      context.handle(
+        _unidadeIdMeta,
+        unidadeId.isAcceptableOrUnknown(data['unidade_id']!, _unidadeIdMeta),
+      );
+    }
     if (data.containsKey('seq')) {
       context.handle(
         _seqMeta,
@@ -1907,6 +1963,12 @@ class $EventosTable extends Eventos with TableInfo<$EventosTable, Evento> {
       );
     } else if (isInserting) {
       context.missing(_tipoMeta);
+    }
+    if (data.containsKey('autor')) {
+      context.handle(
+        _autorMeta,
+        autor.isAcceptableOrUnknown(data['autor']!, _autorMeta),
+      );
     }
     if (data.containsKey('tombamento')) {
       context.handle(
@@ -1969,6 +2031,12 @@ class $EventosTable extends Eventos with TableInfo<$EventosTable, Evento> {
     } else if (isInserting) {
       context.missing(_hashAnteriorMeta);
     }
+    if (data.containsKey('conhecidos')) {
+      context.handle(
+        _conhecidosMeta,
+        conhecidos.isAcceptableOrUnknown(data['conhecidos']!, _conhecidosMeta),
+      );
+    }
     if (data.containsKey('hash')) {
       context.handle(
         _hashMeta,
@@ -1976,6 +2044,12 @@ class $EventosTable extends Eventos with TableInfo<$EventosTable, Evento> {
       );
     } else if (isInserting) {
       context.missing(_hashMeta);
+    }
+    if (data.containsKey('assinatura')) {
+      context.handle(
+        _assinaturaMeta,
+        assinatura.isAcceptableOrUnknown(data['assinatura']!, _assinaturaMeta),
+      );
     }
     return context;
   }
@@ -1990,6 +2064,10 @@ class $EventosTable extends Eventos with TableInfo<$EventosTable, Evento> {
         DriftSqlType.string,
         data['${effectivePrefix}id'],
       )!,
+      unidadeId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}unidade_id'],
+      )!,
       seq: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}seq'],
@@ -1997,6 +2075,10 @@ class $EventosTable extends Eventos with TableInfo<$EventosTable, Evento> {
       tipo: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}tipo'],
+      )!,
+      autor: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}autor'],
       )!,
       tombamento: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
@@ -2030,9 +2112,17 @@ class $EventosTable extends Eventos with TableInfo<$EventosTable, Evento> {
         DriftSqlType.string,
         data['${effectivePrefix}hash_anterior'],
       )!,
+      conhecidos: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}conhecidos'],
+      )!,
       hash: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}hash'],
+      )!,
+      assinatura: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}assinatura'],
       )!,
     );
   }
@@ -2045,8 +2135,10 @@ class $EventosTable extends Eventos with TableInfo<$EventosTable, Evento> {
 
 class Evento extends DataClass implements Insertable<Evento> {
   final String id;
+  final String unidadeId;
   final int seq;
   final String tipo;
+  final String autor;
   final String? tombamento;
   final String localId;
   final String aparelhoId;
@@ -2055,11 +2147,15 @@ class Evento extends DataClass implements Insertable<Evento> {
   final String payload;
   final String? hashFoto;
   final String hashAnterior;
+  final String conhecidos;
   final String hash;
+  final String assinatura;
   const Evento({
     required this.id,
+    required this.unidadeId,
     required this.seq,
     required this.tipo,
+    required this.autor,
     this.tombamento,
     required this.localId,
     required this.aparelhoId,
@@ -2068,14 +2164,18 @@ class Evento extends DataClass implements Insertable<Evento> {
     required this.payload,
     this.hashFoto,
     required this.hashAnterior,
+    required this.conhecidos,
     required this.hash,
+    required this.assinatura,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<String>(id);
+    map['unidade_id'] = Variable<String>(unidadeId);
     map['seq'] = Variable<int>(seq);
     map['tipo'] = Variable<String>(tipo);
+    map['autor'] = Variable<String>(autor);
     if (!nullToAbsent || tombamento != null) {
       map['tombamento'] = Variable<String>(tombamento);
     }
@@ -2088,15 +2188,19 @@ class Evento extends DataClass implements Insertable<Evento> {
       map['hash_foto'] = Variable<String>(hashFoto);
     }
     map['hash_anterior'] = Variable<String>(hashAnterior);
+    map['conhecidos'] = Variable<String>(conhecidos);
     map['hash'] = Variable<String>(hash);
+    map['assinatura'] = Variable<String>(assinatura);
     return map;
   }
 
   EventosCompanion toCompanion(bool nullToAbsent) {
     return EventosCompanion(
       id: Value(id),
+      unidadeId: Value(unidadeId),
       seq: Value(seq),
       tipo: Value(tipo),
+      autor: Value(autor),
       tombamento: tombamento == null && nullToAbsent
           ? const Value.absent()
           : Value(tombamento),
@@ -2109,7 +2213,9 @@ class Evento extends DataClass implements Insertable<Evento> {
           ? const Value.absent()
           : Value(hashFoto),
       hashAnterior: Value(hashAnterior),
+      conhecidos: Value(conhecidos),
       hash: Value(hash),
+      assinatura: Value(assinatura),
     );
   }
 
@@ -2120,8 +2226,10 @@ class Evento extends DataClass implements Insertable<Evento> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return Evento(
       id: serializer.fromJson<String>(json['id']),
+      unidadeId: serializer.fromJson<String>(json['unidadeId']),
       seq: serializer.fromJson<int>(json['seq']),
       tipo: serializer.fromJson<String>(json['tipo']),
+      autor: serializer.fromJson<String>(json['autor']),
       tombamento: serializer.fromJson<String?>(json['tombamento']),
       localId: serializer.fromJson<String>(json['localId']),
       aparelhoId: serializer.fromJson<String>(json['aparelhoId']),
@@ -2130,7 +2238,9 @@ class Evento extends DataClass implements Insertable<Evento> {
       payload: serializer.fromJson<String>(json['payload']),
       hashFoto: serializer.fromJson<String?>(json['hashFoto']),
       hashAnterior: serializer.fromJson<String>(json['hashAnterior']),
+      conhecidos: serializer.fromJson<String>(json['conhecidos']),
       hash: serializer.fromJson<String>(json['hash']),
+      assinatura: serializer.fromJson<String>(json['assinatura']),
     );
   }
   @override
@@ -2138,8 +2248,10 @@ class Evento extends DataClass implements Insertable<Evento> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
+      'unidadeId': serializer.toJson<String>(unidadeId),
       'seq': serializer.toJson<int>(seq),
       'tipo': serializer.toJson<String>(tipo),
+      'autor': serializer.toJson<String>(autor),
       'tombamento': serializer.toJson<String?>(tombamento),
       'localId': serializer.toJson<String>(localId),
       'aparelhoId': serializer.toJson<String>(aparelhoId),
@@ -2148,14 +2260,18 @@ class Evento extends DataClass implements Insertable<Evento> {
       'payload': serializer.toJson<String>(payload),
       'hashFoto': serializer.toJson<String?>(hashFoto),
       'hashAnterior': serializer.toJson<String>(hashAnterior),
+      'conhecidos': serializer.toJson<String>(conhecidos),
       'hash': serializer.toJson<String>(hash),
+      'assinatura': serializer.toJson<String>(assinatura),
     };
   }
 
   Evento copyWith({
     String? id,
+    String? unidadeId,
     int? seq,
     String? tipo,
+    String? autor,
     Value<String?> tombamento = const Value.absent(),
     String? localId,
     String? aparelhoId,
@@ -2164,11 +2280,15 @@ class Evento extends DataClass implements Insertable<Evento> {
     String? payload,
     Value<String?> hashFoto = const Value.absent(),
     String? hashAnterior,
+    String? conhecidos,
     String? hash,
+    String? assinatura,
   }) => Evento(
     id: id ?? this.id,
+    unidadeId: unidadeId ?? this.unidadeId,
     seq: seq ?? this.seq,
     tipo: tipo ?? this.tipo,
+    autor: autor ?? this.autor,
     tombamento: tombamento.present ? tombamento.value : this.tombamento,
     localId: localId ?? this.localId,
     aparelhoId: aparelhoId ?? this.aparelhoId,
@@ -2177,13 +2297,17 @@ class Evento extends DataClass implements Insertable<Evento> {
     payload: payload ?? this.payload,
     hashFoto: hashFoto.present ? hashFoto.value : this.hashFoto,
     hashAnterior: hashAnterior ?? this.hashAnterior,
+    conhecidos: conhecidos ?? this.conhecidos,
     hash: hash ?? this.hash,
+    assinatura: assinatura ?? this.assinatura,
   );
   Evento copyWithCompanion(EventosCompanion data) {
     return Evento(
       id: data.id.present ? data.id.value : this.id,
+      unidadeId: data.unidadeId.present ? data.unidadeId.value : this.unidadeId,
       seq: data.seq.present ? data.seq.value : this.seq,
       tipo: data.tipo.present ? data.tipo.value : this.tipo,
+      autor: data.autor.present ? data.autor.value : this.autor,
       tombamento: data.tombamento.present
           ? data.tombamento.value
           : this.tombamento,
@@ -2200,7 +2324,13 @@ class Evento extends DataClass implements Insertable<Evento> {
       hashAnterior: data.hashAnterior.present
           ? data.hashAnterior.value
           : this.hashAnterior,
+      conhecidos: data.conhecidos.present
+          ? data.conhecidos.value
+          : this.conhecidos,
       hash: data.hash.present ? data.hash.value : this.hash,
+      assinatura: data.assinatura.present
+          ? data.assinatura.value
+          : this.assinatura,
     );
   }
 
@@ -2208,8 +2338,10 @@ class Evento extends DataClass implements Insertable<Evento> {
   String toString() {
     return (StringBuffer('Evento(')
           ..write('id: $id, ')
+          ..write('unidadeId: $unidadeId, ')
           ..write('seq: $seq, ')
           ..write('tipo: $tipo, ')
+          ..write('autor: $autor, ')
           ..write('tombamento: $tombamento, ')
           ..write('localId: $localId, ')
           ..write('aparelhoId: $aparelhoId, ')
@@ -2218,7 +2350,9 @@ class Evento extends DataClass implements Insertable<Evento> {
           ..write('payload: $payload, ')
           ..write('hashFoto: $hashFoto, ')
           ..write('hashAnterior: $hashAnterior, ')
-          ..write('hash: $hash')
+          ..write('conhecidos: $conhecidos, ')
+          ..write('hash: $hash, ')
+          ..write('assinatura: $assinatura')
           ..write(')'))
         .toString();
   }
@@ -2226,8 +2360,10 @@ class Evento extends DataClass implements Insertable<Evento> {
   @override
   int get hashCode => Object.hash(
     id,
+    unidadeId,
     seq,
     tipo,
+    autor,
     tombamento,
     localId,
     aparelhoId,
@@ -2236,15 +2372,19 @@ class Evento extends DataClass implements Insertable<Evento> {
     payload,
     hashFoto,
     hashAnterior,
+    conhecidos,
     hash,
+    assinatura,
   );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is Evento &&
           other.id == this.id &&
+          other.unidadeId == this.unidadeId &&
           other.seq == this.seq &&
           other.tipo == this.tipo &&
+          other.autor == this.autor &&
           other.tombamento == this.tombamento &&
           other.localId == this.localId &&
           other.aparelhoId == this.aparelhoId &&
@@ -2253,13 +2393,17 @@ class Evento extends DataClass implements Insertable<Evento> {
           other.payload == this.payload &&
           other.hashFoto == this.hashFoto &&
           other.hashAnterior == this.hashAnterior &&
-          other.hash == this.hash);
+          other.conhecidos == this.conhecidos &&
+          other.hash == this.hash &&
+          other.assinatura == this.assinatura);
 }
 
 class EventosCompanion extends UpdateCompanion<Evento> {
   final Value<String> id;
+  final Value<String> unidadeId;
   final Value<int> seq;
   final Value<String> tipo;
+  final Value<String> autor;
   final Value<String?> tombamento;
   final Value<String> localId;
   final Value<String> aparelhoId;
@@ -2268,12 +2412,16 @@ class EventosCompanion extends UpdateCompanion<Evento> {
   final Value<String> payload;
   final Value<String?> hashFoto;
   final Value<String> hashAnterior;
+  final Value<String> conhecidos;
   final Value<String> hash;
+  final Value<String> assinatura;
   final Value<int> rowid;
   const EventosCompanion({
     this.id = const Value.absent(),
+    this.unidadeId = const Value.absent(),
     this.seq = const Value.absent(),
     this.tipo = const Value.absent(),
+    this.autor = const Value.absent(),
     this.tombamento = const Value.absent(),
     this.localId = const Value.absent(),
     this.aparelhoId = const Value.absent(),
@@ -2282,13 +2430,17 @@ class EventosCompanion extends UpdateCompanion<Evento> {
     this.payload = const Value.absent(),
     this.hashFoto = const Value.absent(),
     this.hashAnterior = const Value.absent(),
+    this.conhecidos = const Value.absent(),
     this.hash = const Value.absent(),
+    this.assinatura = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   EventosCompanion.insert({
     required String id,
+    this.unidadeId = const Value.absent(),
     required int seq,
     required String tipo,
+    this.autor = const Value.absent(),
     this.tombamento = const Value.absent(),
     required String localId,
     required String aparelhoId,
@@ -2297,7 +2449,9 @@ class EventosCompanion extends UpdateCompanion<Evento> {
     this.payload = const Value.absent(),
     this.hashFoto = const Value.absent(),
     required String hashAnterior,
+    this.conhecidos = const Value.absent(),
     required String hash,
+    this.assinatura = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        seq = Value(seq),
@@ -2310,8 +2464,10 @@ class EventosCompanion extends UpdateCompanion<Evento> {
        hash = Value(hash);
   static Insertable<Evento> custom({
     Expression<String>? id,
+    Expression<String>? unidadeId,
     Expression<int>? seq,
     Expression<String>? tipo,
+    Expression<String>? autor,
     Expression<String>? tombamento,
     Expression<String>? localId,
     Expression<String>? aparelhoId,
@@ -2320,13 +2476,17 @@ class EventosCompanion extends UpdateCompanion<Evento> {
     Expression<String>? payload,
     Expression<String>? hashFoto,
     Expression<String>? hashAnterior,
+    Expression<String>? conhecidos,
     Expression<String>? hash,
+    Expression<String>? assinatura,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
+      if (unidadeId != null) 'unidade_id': unidadeId,
       if (seq != null) 'seq': seq,
       if (tipo != null) 'tipo': tipo,
+      if (autor != null) 'autor': autor,
       if (tombamento != null) 'tombamento': tombamento,
       if (localId != null) 'local_id': localId,
       if (aparelhoId != null) 'aparelho_id': aparelhoId,
@@ -2335,15 +2495,19 @@ class EventosCompanion extends UpdateCompanion<Evento> {
       if (payload != null) 'payload': payload,
       if (hashFoto != null) 'hash_foto': hashFoto,
       if (hashAnterior != null) 'hash_anterior': hashAnterior,
+      if (conhecidos != null) 'conhecidos': conhecidos,
       if (hash != null) 'hash': hash,
+      if (assinatura != null) 'assinatura': assinatura,
       if (rowid != null) 'rowid': rowid,
     });
   }
 
   EventosCompanion copyWith({
     Value<String>? id,
+    Value<String>? unidadeId,
     Value<int>? seq,
     Value<String>? tipo,
+    Value<String>? autor,
     Value<String?>? tombamento,
     Value<String>? localId,
     Value<String>? aparelhoId,
@@ -2352,13 +2516,17 @@ class EventosCompanion extends UpdateCompanion<Evento> {
     Value<String>? payload,
     Value<String?>? hashFoto,
     Value<String>? hashAnterior,
+    Value<String>? conhecidos,
     Value<String>? hash,
+    Value<String>? assinatura,
     Value<int>? rowid,
   }) {
     return EventosCompanion(
       id: id ?? this.id,
+      unidadeId: unidadeId ?? this.unidadeId,
       seq: seq ?? this.seq,
       tipo: tipo ?? this.tipo,
+      autor: autor ?? this.autor,
       tombamento: tombamento ?? this.tombamento,
       localId: localId ?? this.localId,
       aparelhoId: aparelhoId ?? this.aparelhoId,
@@ -2367,7 +2535,9 @@ class EventosCompanion extends UpdateCompanion<Evento> {
       payload: payload ?? this.payload,
       hashFoto: hashFoto ?? this.hashFoto,
       hashAnterior: hashAnterior ?? this.hashAnterior,
+      conhecidos: conhecidos ?? this.conhecidos,
       hash: hash ?? this.hash,
+      assinatura: assinatura ?? this.assinatura,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -2378,11 +2548,17 @@ class EventosCompanion extends UpdateCompanion<Evento> {
     if (id.present) {
       map['id'] = Variable<String>(id.value);
     }
+    if (unidadeId.present) {
+      map['unidade_id'] = Variable<String>(unidadeId.value);
+    }
     if (seq.present) {
       map['seq'] = Variable<int>(seq.value);
     }
     if (tipo.present) {
       map['tipo'] = Variable<String>(tipo.value);
+    }
+    if (autor.present) {
+      map['autor'] = Variable<String>(autor.value);
     }
     if (tombamento.present) {
       map['tombamento'] = Variable<String>(tombamento.value);
@@ -2408,8 +2584,14 @@ class EventosCompanion extends UpdateCompanion<Evento> {
     if (hashAnterior.present) {
       map['hash_anterior'] = Variable<String>(hashAnterior.value);
     }
+    if (conhecidos.present) {
+      map['conhecidos'] = Variable<String>(conhecidos.value);
+    }
     if (hash.present) {
       map['hash'] = Variable<String>(hash.value);
+    }
+    if (assinatura.present) {
+      map['assinatura'] = Variable<String>(assinatura.value);
     }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
@@ -2421,8 +2603,10 @@ class EventosCompanion extends UpdateCompanion<Evento> {
   String toString() {
     return (StringBuffer('EventosCompanion(')
           ..write('id: $id, ')
+          ..write('unidadeId: $unidadeId, ')
           ..write('seq: $seq, ')
           ..write('tipo: $tipo, ')
+          ..write('autor: $autor, ')
           ..write('tombamento: $tombamento, ')
           ..write('localId: $localId, ')
           ..write('aparelhoId: $aparelhoId, ')
@@ -2431,7 +2615,321 @@ class EventosCompanion extends UpdateCompanion<Evento> {
           ..write('payload: $payload, ')
           ..write('hashFoto: $hashFoto, ')
           ..write('hashAnterior: $hashAnterior, ')
+          ..write('conhecidos: $conhecidos, ')
           ..write('hash: $hash, ')
+          ..write('assinatura: $assinatura, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $EventosQuarentenaTable extends EventosQuarentena
+    with TableInfo<$EventosQuarentenaTable, EventosQuarentenaData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $EventosQuarentenaTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _eventoJsonMeta = const VerificationMeta(
+    'eventoJson',
+  );
+  @override
+  late final GeneratedColumn<String> eventoJson = GeneratedColumn<String>(
+    'evento_json',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _motivoMeta = const VerificationMeta('motivo');
+  @override
+  late final GeneratedColumn<String> motivo = GeneratedColumn<String>(
+    'motivo',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _timestampMeta = const VerificationMeta(
+    'timestamp',
+  );
+  @override
+  late final GeneratedColumn<DateTime> timestamp = GeneratedColumn<DateTime>(
+    'timestamp',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, eventoJson, motivo, timestamp];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'eventos_quarentena';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<EventosQuarentenaData> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('evento_json')) {
+      context.handle(
+        _eventoJsonMeta,
+        eventoJson.isAcceptableOrUnknown(data['evento_json']!, _eventoJsonMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_eventoJsonMeta);
+    }
+    if (data.containsKey('motivo')) {
+      context.handle(
+        _motivoMeta,
+        motivo.isAcceptableOrUnknown(data['motivo']!, _motivoMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_motivoMeta);
+    }
+    if (data.containsKey('timestamp')) {
+      context.handle(
+        _timestampMeta,
+        timestamp.isAcceptableOrUnknown(data['timestamp']!, _timestampMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_timestampMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  EventosQuarentenaData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return EventosQuarentenaData(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      eventoJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}evento_json'],
+      )!,
+      motivo: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}motivo'],
+      )!,
+      timestamp: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}timestamp'],
+      )!,
+    );
+  }
+
+  @override
+  $EventosQuarentenaTable createAlias(String alias) {
+    return $EventosQuarentenaTable(attachedDatabase, alias);
+  }
+}
+
+class EventosQuarentenaData extends DataClass
+    implements Insertable<EventosQuarentenaData> {
+  final String id;
+  final String eventoJson;
+  final String motivo;
+  final DateTime timestamp;
+  const EventosQuarentenaData({
+    required this.id,
+    required this.eventoJson,
+    required this.motivo,
+    required this.timestamp,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['evento_json'] = Variable<String>(eventoJson);
+    map['motivo'] = Variable<String>(motivo);
+    map['timestamp'] = Variable<DateTime>(timestamp);
+    return map;
+  }
+
+  EventosQuarentenaCompanion toCompanion(bool nullToAbsent) {
+    return EventosQuarentenaCompanion(
+      id: Value(id),
+      eventoJson: Value(eventoJson),
+      motivo: Value(motivo),
+      timestamp: Value(timestamp),
+    );
+  }
+
+  factory EventosQuarentenaData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return EventosQuarentenaData(
+      id: serializer.fromJson<String>(json['id']),
+      eventoJson: serializer.fromJson<String>(json['eventoJson']),
+      motivo: serializer.fromJson<String>(json['motivo']),
+      timestamp: serializer.fromJson<DateTime>(json['timestamp']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'eventoJson': serializer.toJson<String>(eventoJson),
+      'motivo': serializer.toJson<String>(motivo),
+      'timestamp': serializer.toJson<DateTime>(timestamp),
+    };
+  }
+
+  EventosQuarentenaData copyWith({
+    String? id,
+    String? eventoJson,
+    String? motivo,
+    DateTime? timestamp,
+  }) => EventosQuarentenaData(
+    id: id ?? this.id,
+    eventoJson: eventoJson ?? this.eventoJson,
+    motivo: motivo ?? this.motivo,
+    timestamp: timestamp ?? this.timestamp,
+  );
+  EventosQuarentenaData copyWithCompanion(EventosQuarentenaCompanion data) {
+    return EventosQuarentenaData(
+      id: data.id.present ? data.id.value : this.id,
+      eventoJson: data.eventoJson.present
+          ? data.eventoJson.value
+          : this.eventoJson,
+      motivo: data.motivo.present ? data.motivo.value : this.motivo,
+      timestamp: data.timestamp.present ? data.timestamp.value : this.timestamp,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('EventosQuarentenaData(')
+          ..write('id: $id, ')
+          ..write('eventoJson: $eventoJson, ')
+          ..write('motivo: $motivo, ')
+          ..write('timestamp: $timestamp')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, eventoJson, motivo, timestamp);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is EventosQuarentenaData &&
+          other.id == this.id &&
+          other.eventoJson == this.eventoJson &&
+          other.motivo == this.motivo &&
+          other.timestamp == this.timestamp);
+}
+
+class EventosQuarentenaCompanion
+    extends UpdateCompanion<EventosQuarentenaData> {
+  final Value<String> id;
+  final Value<String> eventoJson;
+  final Value<String> motivo;
+  final Value<DateTime> timestamp;
+  final Value<int> rowid;
+  const EventosQuarentenaCompanion({
+    this.id = const Value.absent(),
+    this.eventoJson = const Value.absent(),
+    this.motivo = const Value.absent(),
+    this.timestamp = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  EventosQuarentenaCompanion.insert({
+    required String id,
+    required String eventoJson,
+    required String motivo,
+    required DateTime timestamp,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       eventoJson = Value(eventoJson),
+       motivo = Value(motivo),
+       timestamp = Value(timestamp);
+  static Insertable<EventosQuarentenaData> custom({
+    Expression<String>? id,
+    Expression<String>? eventoJson,
+    Expression<String>? motivo,
+    Expression<DateTime>? timestamp,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (eventoJson != null) 'evento_json': eventoJson,
+      if (motivo != null) 'motivo': motivo,
+      if (timestamp != null) 'timestamp': timestamp,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  EventosQuarentenaCompanion copyWith({
+    Value<String>? id,
+    Value<String>? eventoJson,
+    Value<String>? motivo,
+    Value<DateTime>? timestamp,
+    Value<int>? rowid,
+  }) {
+    return EventosQuarentenaCompanion(
+      id: id ?? this.id,
+      eventoJson: eventoJson ?? this.eventoJson,
+      motivo: motivo ?? this.motivo,
+      timestamp: timestamp ?? this.timestamp,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (eventoJson.present) {
+      map['evento_json'] = Variable<String>(eventoJson.value);
+    }
+    if (motivo.present) {
+      map['motivo'] = Variable<String>(motivo.value);
+    }
+    if (timestamp.present) {
+      map['timestamp'] = Variable<DateTime>(timestamp.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('EventosQuarentenaCompanion(')
+          ..write('id: $id, ')
+          ..write('eventoJson: $eventoJson, ')
+          ..write('motivo: $motivo, ')
+          ..write('timestamp: $timestamp, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -2448,6 +2946,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     this,
   );
   late final $EventosTable eventos = $EventosTable(this);
+  late final $EventosQuarentenaTable eventosQuarentena =
+      $EventosQuarentenaTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -2458,6 +2958,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     bens,
     conferenciaSalas,
     eventos,
+    eventosQuarentena,
   ];
 }
 
@@ -3388,8 +3889,10 @@ typedef $$ConferenciaSalasTableProcessedTableManager =
     >;
 typedef $$EventosTableCreateCompanionBuilder = EventosCompanion Function({
   required String id,
+  Value<String> unidadeId,
   required int seq,
   required String tipo,
+  Value<String> autor,
   Value<String?> tombamento,
   required String localId,
   required String aparelhoId,
@@ -3398,13 +3901,17 @@ typedef $$EventosTableCreateCompanionBuilder = EventosCompanion Function({
   Value<String> payload,
   Value<String?> hashFoto,
   required String hashAnterior,
+  Value<String> conhecidos,
   required String hash,
+  Value<String> assinatura,
   Value<int> rowid,
 });
 typedef $$EventosTableUpdateCompanionBuilder = EventosCompanion Function({
   Value<String> id,
+  Value<String> unidadeId,
   Value<int> seq,
   Value<String> tipo,
+  Value<String> autor,
   Value<String?> tombamento,
   Value<String> localId,
   Value<String> aparelhoId,
@@ -3413,7 +3920,9 @@ typedef $$EventosTableUpdateCompanionBuilder = EventosCompanion Function({
   Value<String> payload,
   Value<String?> hashFoto,
   Value<String> hashAnterior,
+  Value<String> conhecidos,
   Value<String> hash,
+  Value<String> assinatura,
   Value<int> rowid,
 });
 
@@ -3431,6 +3940,11 @@ class $$EventosTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<String> get unidadeId => $composableBuilder(
+    column: $table.unidadeId,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<int> get seq => $composableBuilder(
     column: $table.seq,
     builder: (column) => ColumnFilters(column),
@@ -3438,6 +3952,11 @@ class $$EventosTableFilterComposer
 
   ColumnFilters<String> get tipo => $composableBuilder(
     column: $table.tipo,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get autor => $composableBuilder(
+    column: $table.autor,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -3481,8 +4000,18 @@ class $$EventosTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<String> get conhecidos => $composableBuilder(
+    column: $table.conhecidos,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<String> get hash => $composableBuilder(
     column: $table.hash,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get assinatura => $composableBuilder(
+    column: $table.assinatura,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -3501,6 +4030,11 @@ class $$EventosTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get unidadeId => $composableBuilder(
+    column: $table.unidadeId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<int> get seq => $composableBuilder(
     column: $table.seq,
     builder: (column) => ColumnOrderings(column),
@@ -3508,6 +4042,11 @@ class $$EventosTableOrderingComposer
 
   ColumnOrderings<String> get tipo => $composableBuilder(
     column: $table.tipo,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get autor => $composableBuilder(
+    column: $table.autor,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -3551,8 +4090,18 @@ class $$EventosTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get conhecidos => $composableBuilder(
+    column: $table.conhecidos,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get hash => $composableBuilder(
     column: $table.hash,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get assinatura => $composableBuilder(
+    column: $table.assinatura,
     builder: (column) => ColumnOrderings(column),
   );
 }
@@ -3569,11 +4118,17 @@ class $$EventosTableAnnotationComposer
   GeneratedColumn<String> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
 
+  GeneratedColumn<String> get unidadeId =>
+      $composableBuilder(column: $table.unidadeId, builder: (column) => column);
+
   GeneratedColumn<int> get seq =>
       $composableBuilder(column: $table.seq, builder: (column) => column);
 
   GeneratedColumn<String> get tipo =>
       $composableBuilder(column: $table.tipo, builder: (column) => column);
+
+  GeneratedColumn<String> get autor =>
+      $composableBuilder(column: $table.autor, builder: (column) => column);
 
   GeneratedColumn<String> get tombamento => $composableBuilder(
     column: $table.tombamento,
@@ -3607,8 +4162,18 @@ class $$EventosTableAnnotationComposer
     builder: (column) => column,
   );
 
+  GeneratedColumn<String> get conhecidos => $composableBuilder(
+    column: $table.conhecidos,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<String> get hash =>
       $composableBuilder(column: $table.hash, builder: (column) => column);
+
+  GeneratedColumn<String> get assinatura => $composableBuilder(
+    column: $table.assinatura,
+    builder: (column) => column,
+  );
 }
 
 class $$EventosTableTableManager
@@ -3640,8 +4205,10 @@ class $$EventosTableTableManager
           updateCompanionCallback:
               ({
                 Value<String> id = const Value.absent(),
+                Value<String> unidadeId = const Value.absent(),
                 Value<int> seq = const Value.absent(),
                 Value<String> tipo = const Value.absent(),
+                Value<String> autor = const Value.absent(),
                 Value<String?> tombamento = const Value.absent(),
                 Value<String> localId = const Value.absent(),
                 Value<String> aparelhoId = const Value.absent(),
@@ -3650,12 +4217,16 @@ class $$EventosTableTableManager
                 Value<String> payload = const Value.absent(),
                 Value<String?> hashFoto = const Value.absent(),
                 Value<String> hashAnterior = const Value.absent(),
+                Value<String> conhecidos = const Value.absent(),
                 Value<String> hash = const Value.absent(),
+                Value<String> assinatura = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => EventosCompanion(
                 id: id,
+                unidadeId: unidadeId,
                 seq: seq,
                 tipo: tipo,
+                autor: autor,
                 tombamento: tombamento,
                 localId: localId,
                 aparelhoId: aparelhoId,
@@ -3664,14 +4235,18 @@ class $$EventosTableTableManager
                 payload: payload,
                 hashFoto: hashFoto,
                 hashAnterior: hashAnterior,
+                conhecidos: conhecidos,
                 hash: hash,
+                assinatura: assinatura,
                 rowid: rowid,
               ),
           createCompanionCallback:
               ({
                 required String id,
+                Value<String> unidadeId = const Value.absent(),
                 required int seq,
                 required String tipo,
+                Value<String> autor = const Value.absent(),
                 Value<String?> tombamento = const Value.absent(),
                 required String localId,
                 required String aparelhoId,
@@ -3680,12 +4255,16 @@ class $$EventosTableTableManager
                 Value<String> payload = const Value.absent(),
                 Value<String?> hashFoto = const Value.absent(),
                 required String hashAnterior,
+                Value<String> conhecidos = const Value.absent(),
                 required String hash,
+                Value<String> assinatura = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => EventosCompanion.insert(
                 id: id,
+                unidadeId: unidadeId,
                 seq: seq,
                 tipo: tipo,
+                autor: autor,
                 tombamento: tombamento,
                 localId: localId,
                 aparelhoId: aparelhoId,
@@ -3694,7 +4273,9 @@ class $$EventosTableTableManager
                 payload: payload,
                 hashFoto: hashFoto,
                 hashAnterior: hashAnterior,
+                conhecidos: conhecidos,
                 hash: hash,
+                assinatura: assinatura,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
@@ -3728,6 +4309,213 @@ typedef $$EventosTableProcessedTableManager =
       Evento,
       PrefetchHooks Function()
     >;
+typedef $$EventosQuarentenaTableCreateCompanionBuilder =
+    EventosQuarentenaCompanion Function({
+      required String id,
+      required String eventoJson,
+      required String motivo,
+      required DateTime timestamp,
+      Value<int> rowid,
+    });
+typedef $$EventosQuarentenaTableUpdateCompanionBuilder =
+    EventosQuarentenaCompanion Function({
+      Value<String> id,
+      Value<String> eventoJson,
+      Value<String> motivo,
+      Value<DateTime> timestamp,
+      Value<int> rowid,
+    });
+
+class $$EventosQuarentenaTableFilterComposer
+    extends Composer<_$AppDatabase, $EventosQuarentenaTable> {
+  $$EventosQuarentenaTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get eventoJson => $composableBuilder(
+    column: $table.eventoJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get motivo => $composableBuilder(
+    column: $table.motivo,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get timestamp => $composableBuilder(
+    column: $table.timestamp,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$EventosQuarentenaTableOrderingComposer
+    extends Composer<_$AppDatabase, $EventosQuarentenaTable> {
+  $$EventosQuarentenaTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get eventoJson => $composableBuilder(
+    column: $table.eventoJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get motivo => $composableBuilder(
+    column: $table.motivo,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get timestamp => $composableBuilder(
+    column: $table.timestamp,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$EventosQuarentenaTableAnnotationComposer
+    extends Composer<_$AppDatabase, $EventosQuarentenaTable> {
+  $$EventosQuarentenaTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get eventoJson => $composableBuilder(
+    column: $table.eventoJson,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get motivo =>
+      $composableBuilder(column: $table.motivo, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get timestamp =>
+      $composableBuilder(column: $table.timestamp, builder: (column) => column);
+}
+
+class $$EventosQuarentenaTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $EventosQuarentenaTable,
+          EventosQuarentenaData,
+          $$EventosQuarentenaTableFilterComposer,
+          $$EventosQuarentenaTableOrderingComposer,
+          $$EventosQuarentenaTableAnnotationComposer,
+          $$EventosQuarentenaTableCreateCompanionBuilder,
+          $$EventosQuarentenaTableUpdateCompanionBuilder,
+          (
+            EventosQuarentenaData,
+            BaseReferences<
+              _$AppDatabase,
+              $EventosQuarentenaTable,
+              EventosQuarentenaData
+            >,
+          ),
+          EventosQuarentenaData,
+          PrefetchHooks Function()
+        > {
+  $$EventosQuarentenaTableTableManager(
+    _$AppDatabase db,
+    $EventosQuarentenaTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$EventosQuarentenaTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$EventosQuarentenaTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$EventosQuarentenaTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> eventoJson = const Value.absent(),
+                Value<String> motivo = const Value.absent(),
+                Value<DateTime> timestamp = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => EventosQuarentenaCompanion(
+                id: id,
+                eventoJson: eventoJson,
+                motivo: motivo,
+                timestamp: timestamp,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String eventoJson,
+                required String motivo,
+                required DateTime timestamp,
+                Value<int> rowid = const Value.absent(),
+              }) => EventosQuarentenaCompanion.insert(
+                id: id,
+                eventoJson: eventoJson,
+                motivo: motivo,
+                timestamp: timestamp,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$EventosQuarentenaTable, EventosQuarentenaData>(
+                    table,
+                  ),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $EventosQuarentenaTable,
+                    EventosQuarentenaData
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$EventosQuarentenaTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $EventosQuarentenaTable,
+      EventosQuarentenaData,
+      $$EventosQuarentenaTableFilterComposer,
+      $$EventosQuarentenaTableOrderingComposer,
+      $$EventosQuarentenaTableAnnotationComposer,
+      $$EventosQuarentenaTableCreateCompanionBuilder,
+      $$EventosQuarentenaTableUpdateCompanionBuilder,
+      (
+        EventosQuarentenaData,
+        BaseReferences<
+          _$AppDatabase,
+          $EventosQuarentenaTable,
+          EventosQuarentenaData
+        >,
+      ),
+      EventosQuarentenaData,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -3741,4 +4529,6 @@ class $AppDatabaseManager {
       $$ConferenciaSalasTableTableManager(_db, _db.conferenciaSalas);
   $$EventosTableTableManager get eventos =>
       $$EventosTableTableManager(_db, _db.eventos);
+  $$EventosQuarentenaTableTableManager get eventosQuarentena =>
+      $$EventosQuarentenaTableTableManager(_db, _db.eventosQuarentena);
 }

@@ -24,6 +24,8 @@ Todas as bibliotecas adotadas possuem licenças de código aberto permissivas (M
 | **intl** | 0.20.3 | BSD-3-Clause | Internacionalização, formatação de datas e números no padrão pt_BR. |
 | **uuid** | 4.6.0 | MIT | Geração de identificadores únicos (UUID v4) para eventos imutáveis e aparelho. |
 | **crypto** | 3.0.8 | BSD-3-Clause | Algoritmos criptográficos de hash (SHA-256) para a cadeia de eventos de auditoria. |
+| **cryptography** | 2.9.0 | Apache-2.0 | Implementação criptográfica de chaves Ed25519 e assinaturas digitais não-repúdio. |
+| **flutter_secure_storage** | 11.2.0 | BSD-3-Clause | Armazenamento seguro de chave privada Ed25519 em Keystore/Keychain. |
 | **cupertino_icons** | 1.0.9 | MIT | Ícones adicionais no estilo visual iOS quando necessário. |
 | **flutter_lints** | 6.0.0 | BSD-3-Clause | Conjunto oficial de boas práticas e análise estática recomendada para Flutter. |
 | **build_runner** / **drift_dev** | 2.17.1 / 2.35.2 | BSD-3-Clause / MIT | Geradores de código estático para o Drift (apenas em desenvolvimento). |

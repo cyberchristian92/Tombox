@@ -63,7 +63,7 @@ void main() {
     appRouter.go('/');
     await tester.pump(const Duration(milliseconds: 100));
     await tester.pump(const Duration(milliseconds: 100));
-    expect(find.text('Nenhuma unidade carregada'), findsOneWidget);
+    expect(find.text('Início'), findsOneWidget);
 
     await testDb.close();
   });

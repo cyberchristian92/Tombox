@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../brand/brand_provider.dart';
@@ -6,6 +7,7 @@ import '../../../core/theme/app_tokens.dart';
 import '../../../data/importacao/importacao_service.dart';
 import '../../../data/local/perfil_provider.dart';
 import '../../../data/local/queries_provider.dart';
+import '../../../domain/identidade/identidade_provider.dart';
 import '../../configuracoes/providers/diagnostico_provider.dart';
 
 class MaisScreen extends ConsumerWidget {
@@ -121,14 +123,45 @@ class MaisScreen extends ConsumerWidget {
                             ),
                           ),
                           const SizedBox(height: 2),
-                          Text(
-                            'Chave Ed25519: 7F4A-98C2-E109',
-                            style: TextStyle(
-                              fontFamily: AppTokens.fontePlaqueta,
-                              fontSize: 12,
-                              color: corTextoSec,
-                              letterSpacing: 0.5,
-                            ),
+                          Builder(
+                            builder: (context) {
+                              final identidadeAsync = ref.watch(identidadeAparelhoProvider);
+                              final impressao = identidadeAsync.when(
+                                data: (id) => id.impressaoCurta,
+                                loading: () => 'Carregando...',
+                                error: (_, _) => 'ED25-LOCAL-0001',
+                              );
+                              return InkWell(
+                                onTap: () {
+                                  final pubKey = identidadeAsync.asData?.value.publicKeyHex;
+                                  if (pubKey != null) {
+                                    Clipboard.setData(ClipboardData(text: pubKey));
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text('Chave pública copiada: ${pubKey.substring(0, 16)}...'),
+                                        behavior: SnackBarBehavior.floating,
+                                      ),
+                                    );
+                                  }
+                                },
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      'Chave Ed25519: $impressao',
+                                      style: TextStyle(
+                                        fontFamily: AppTokens.fontePlaqueta,
+                                        fontSize: 12,
+                                        color: corTextoSec,
+                                        letterSpacing: 0.5,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Icon(Icons.copy_outlined, size: 12, color: corTextoSec),
+                                  ],
+                                ),
+                              );
+                            },
                           ),
                         ],
                       ),

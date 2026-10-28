@@ -8,12 +8,18 @@ class ItemLinhaDoTempo {
   final String titulo;
   final String? detalhe;
   final Color? corMarcador;
+  final bool? assinaturaValida;
+  final String? hash;
+  final String? autorCurto;
 
   const ItemLinhaDoTempo({
     required this.dataHora,
     required this.titulo,
     this.detalhe,
     this.corMarcador,
+    this.assinaturaValida,
+    this.hash,
+    this.autorCurto,
   });
 }
 
@@ -115,6 +121,38 @@ class LinhaDoTempo extends StatelessWidget {
                               fontSize: 13,
                               color: subColor,
                             ),
+                          ),
+                        ],
+                        if (itens[i].assinaturaValida != null) ...[
+                          const SizedBox(height: 4),
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                itens[i].assinaturaValida == true
+                                    ? Icons.verified_user_outlined
+                                    : Icons.gpp_bad_outlined,
+                                size: 13,
+                                color: itens[i].assinaturaValida == true
+                                    ? AppTokens.statusConferido
+                                    : AppTokens.statusSemCadastro,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                itens[i].assinaturaValida == true
+                                    ? 'Assinatura Ed25519 verificada'
+                                    : 'Assinatura não verificada',
+                                style: TextStyle(
+                                  fontFamily: AppTokens.fontePadrao,
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w600,
+                                  color: itens[i].assinaturaValida == true
+                                      ? AppTokens.statusConferido
+                                      : AppTokens.statusSemCadastro,
+                                  fontFeatures: AppTokens.algarismosTabulares,
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ],

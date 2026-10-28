@@ -53,6 +53,9 @@ Commit: "app: identidade Ed25519, eventos assinados e proveniência por campo"
 5. Linha do tempo da Ficha com "assinatura verificada" real.
 6. Testes: assinatura válida e inválida, evento adulterado, seq com buraco, ordem determinística da projeção, proveniência.
 
+## Antes do Bloco C: revisão do Bloco A
+Leia `docs/prompts/08A-revisao.md` e aplique as seções 1, 2 e 2b (golden tests para as capturas e os bugs visuais). Commit "app: revisão visual do bloco A", push e resumo em `docs/respostas/08-A2.md`. Só depois comece o Bloco C.
+
 ## Bloco C: fotos mínimas
 Commit: "app: fotos comprimidas e armazenamento por conteúdo"
 

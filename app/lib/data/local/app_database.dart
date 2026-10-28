@@ -56,8 +56,10 @@ class ConferenciaSalas extends Table {
 
 class Eventos extends Table {
   TextColumn get id => text()();
+  TextColumn get unidadeId => text().withDefault(const Constant('unidade_demo'))();
   IntColumn get seq => integer()();
   TextColumn get tipo => text()(); // LEITURA, CONFIRMACAO, ESTADO, etc.
+  TextColumn get autor => text().withDefault(const Constant('local_device'))();
   TextColumn get tombamento => text().nullable()();
   TextColumn get localId => text()();
   TextColumn get aparelhoId => text()();
@@ -66,13 +68,25 @@ class Eventos extends Table {
   TextColumn get payload => text().withDefault(const Constant('{}'))();
   TextColumn get hashFoto => text().nullable()();
   TextColumn get hashAnterior => text()();
+  TextColumn get conhecidos => text().withDefault(const Constant('{}'))();
   TextColumn get hash => text()();
+  TextColumn get assinatura => text().withDefault(const Constant(''))();
 
   @override
   Set<Column> get primaryKey => {id};
 }
 
-@DriftDatabase(tables: [Unidades, Locais, Bens, ConferenciaSalas, Eventos])
+class EventosQuarentena extends Table {
+  TextColumn get id => text()();
+  TextColumn get eventoJson => text()();
+  TextColumn get motivo => text()();
+  DateTimeColumn get timestamp => dateTime()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+@DriftDatabase(tables: [Unidades, Locais, Bens, ConferenciaSalas, Eventos, EventosQuarentena])
 class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? e])
       : super(
@@ -92,6 +106,29 @@ class AppDatabase extends _$AppDatabase {
   /// Inserção imutável de evento (nunca permite update ou delete de eventos)
   Future<int> registrarEvento(EventosCompanion evento) {
     return into(eventos).insert(evento);
+  }
+
+  /// Inserção em quarentena de evento com assinatura/integridade inválida
+  Future<int> registrarQuarentena({
+    required String id,
+    required String eventoJson,
+    required String motivo,
+  }) {
+    return into(eventosQuarentena).insert(
+      EventosQuarentenaCompanion.insert(
+        id: id,
+        eventoJson: eventoJson,
+        motivo: motivo,
+        timestamp: DateTime.now(),
+      ),
+    );
+  }
+
+  /// Lista eventos em quarentena para diagnóstico
+  Future<List<EventosQuarentenaData>> obterEventosQuarentena() {
+    return (select(eventosQuarentena)
+          ..orderBy([(tbl) => OrderingTerm.desc(tbl.timestamp)]))
+        .get();
   }
 
   /// Busca o último evento para calcular o hash encadeado
