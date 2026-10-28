@@ -4,10 +4,13 @@ import '../../features/bem/screens/bem_screen.dart';
 import '../../features/bem/screens/bens_screen.dart';
 import '../../features/conferencia/screens/conferencia_screen.dart';
 import '../../features/configuracoes/screens/configuracoes_screen.dart';
+import '../../features/divergencias/screens/divergencias_screen.dart';
 import '../../features/exportacao/screens/exportacao_screen.dart';
+import '../../features/homologacao/screens/homologacao_screen.dart';
 import '../../features/importacao/screens/importacao_screen.dart';
 import '../../features/inicio/screens/inicio_screen.dart';
 import '../../features/mais/screens/mais_screen.dart';
+import '../../features/membros/screens/membros_screen.dart';
 import '../../features/salas/screens/locais_screen.dart';
 import '../../features/salas/screens/sala_detalhe_screen.dart';
 import '../../features/sincronizacao/screens/sincronizacao_screen.dart';
@@ -132,6 +135,21 @@ final appRouter = GoRouter(
       path: '/sincronizacao',
       parentNavigatorKey: _rootNavigatorKey,
       builder: (context, state) => const SincronizacaoScreen(),
+    ),
+    GoRoute(
+      path: '/divergencias',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (context, state) => const DivergenciasScreen(),
+    ),
+    GoRoute(
+      path: '/homologacao',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (context, state) => const HomologacaoScreen(),
+    ),
+    GoRoute(
+      path: '/membros',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (context, state) => const MembrosScreen(),
     ),
     // Redirecionamento de compatibilidade
     GoRoute(

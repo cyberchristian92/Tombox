@@ -1,4 +1,6 @@
 import '../identidade/identidade_service.dart';
+import '../membros/membro_models.dart';
+import '../membros/membro_service.dart';
 import 'evento_v2.dart';
 
 /// Motivos de rejeição de um evento
@@ -42,12 +44,21 @@ class EventoValidador {
     required EventoV2 evento,
     EventoV2? ultimoEventoDoAutor,
     Set<String>? autoresRevogados,
+    PapelUsuario? papelDoAutor,
   }) async {
     // 1. Verificar se o autor foi revogado
     if (autoresRevogados != null && autoresRevogados.contains(evento.autor)) {
       return ResultadoValidacao.falha(
         MotivoRejeicao.autorRevogado,
         'O autor ${evento.autor.substring(0, 8)}... foi revogado da unidade.',
+      );
+    }
+
+    // 1b. Verificar se o papel do autor autoriza o tipo de evento
+    if (papelDoAutor != null && !MembroService.verificarPermissao(papelDoAutor, evento.tipo)) {
+      return ResultadoValidacao.falha(
+        MotivoRejeicao.papelNaoAutorizado,
+        'O papel ${papelDoAutor.rotulo} não possui autorização para emitir evento do tipo ${evento.tipo}.',
       );
     }
 

@@ -8,6 +8,7 @@ import '../../../data/importacao/importacao_service.dart';
 import '../../../data/local/perfil_provider.dart';
 import '../../../data/local/queries_provider.dart';
 import '../../../domain/identidade/identidade_provider.dart';
+import '../../../domain/membros/perfil_provider.dart';
 import '../../configuracoes/providers/diagnostico_provider.dart';
 
 class MaisScreen extends ConsumerWidget {
@@ -171,10 +172,12 @@ class MaisScreen extends ConsumerWidget {
                       tooltip: 'Alternar papel (Gestor/Conferente)',
                       onPressed: () {
                         perfilNotifier.alternarPapel();
+                        ref.read(perfilUsuarioProvider.notifier).alternarPerfil();
+                        final novoPapel = ref.read(perfilUsuarioProvider);
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: Text(
-                              'Papel alternado para: ${ref.read(perfilProvider).papel}',
+                              'Papel alternado para: ${novoPapel.rotulo}',
                             ),
                             behavior: SnackBarBehavior.floating,
                           ),
@@ -262,6 +265,52 @@ class MaisScreen extends ConsumerWidget {
                     corBorda: corBorda,
                     temDivisoria: false,
                     onTap: () => context.push('/sincronizacao'),
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 20),
+
+            // Seção: Gestão e governança (Arquitetura v2)
+            _buildTituloSecao('Gestão e governança', corTexto),
+            Container(
+              decoration: BoxDecoration(
+                color: corFundoBloco,
+                border: Border(
+                  top: BorderSide(color: corBorda, width: 1),
+                  bottom: BorderSide(color: corBorda, width: 1),
+                ),
+              ),
+              child: Column(
+                children: [
+                  _buildLinhaItem(
+                    icone: Icons.warning_amber_outlined,
+                    titulo: 'Fila de divergências',
+                    subtitulo: 'Causas prováveis, conflitos lado a lado e resolução',
+                    corTexto: corTexto,
+                    corTextoSec: corTextoSec,
+                    corBorda: corBorda,
+                    onTap: () => context.push('/divergencias'),
+                  ),
+                  _buildLinhaItem(
+                    icone: Icons.verified_outlined,
+                    titulo: 'Homologação patrimonial',
+                    subtitulo: 'Aprovação formal do setor pelo Gestor (seção 11.2)',
+                    corTexto: corTexto,
+                    corTextoSec: corTextoSec,
+                    corBorda: corBorda,
+                    onTap: () => context.push('/homologacao'),
+                  ),
+                  _buildLinhaItem(
+                    icone: Icons.group_outlined,
+                    titulo: 'Equipe e convites QR',
+                    subtitulo: 'Comissão inventariante e convites de uso único',
+                    corTexto: corTexto,
+                    corTextoSec: corTextoSec,
+                    corBorda: corBorda,
+                    temDivisoria: false,
+                    onTap: () => context.push('/membros'),
                   ),
                 ],
               ),

@@ -57,6 +57,16 @@ class IdentidadeService {
     return 'ED25-$b1$b2-$b3$b4';
   }
 
+  /// Gera a impressão digital curta a partir da chave pública em hexadecimal
+  static String gerarImpressaoCurtaDeHex(String hex) {
+    if (hex.isEmpty) return 'ED25-0000-0000';
+    try {
+      return gerarImpressaoCurta(hexParaBytes(hex));
+    } catch (_) {
+      return 'ED25-????-????';
+    }
+  }
+
   /// Inicializa ou recupera a identidade local do aparelho.
   /// Se não existir, gera um novo par Ed25519 e persiste a chave privada.
   static Future<IdentidadeAparelho> obterOuCriarIdentidade({
