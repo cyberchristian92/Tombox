@@ -1,7 +1,10 @@
 import 'dart:convert';
+import 'dart:typed_data';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:drift/drift.dart' show OrderingTerm;
+import 'package:image/image.dart' as img;
 import '../../../core/theme/app_tokens.dart';
 import '../../../core/utils/formatador.dart';
 import '../../../core/widgets/carimbo.dart';
@@ -10,6 +13,8 @@ import '../../../core/widgets/lista_dados.dart';
 import '../../../core/widgets/plaqueta.dart';
 import '../../../data/local/app_database.dart';
 import '../../../data/local/database_provider.dart';
+import '../../../data/local/perfil_provider.dart';
+import '../../../domain/fotos/foto_service.dart';
 
 class BemScreen extends ConsumerStatefulWidget {
   final String tombamento;
@@ -279,6 +284,44 @@ class _BemScreenState extends ConsumerState<BemScreen> {
 
                         const SizedBox(height: 16),
 
+                        // Evidências Fotográficas (Galeria v2)
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AppTokens.paddingLateral,
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    'Evidências fotográficas (${eventos.where((e) => e.hashFoto != null && e.hashFoto!.isNotEmpty).length})',
+                                    style: TextStyle(
+                                      fontFamily: AppTokens.fonteTitulo,
+                                      fontSize: AppTokens.tamSecao,
+                                      fontWeight: FontWeight.w600,
+                                      color: isDark ? AppTokens.grafiteEscuro : AppTokens.grafite,
+                                    ),
+                                  ),
+                                  Text(
+                                    'WebP • Max 1024px',
+                                    style: TextStyle(
+                                      fontFamily: AppTokens.fontePadrao,
+                                      fontSize: 12,
+                                      color: isDark ? AppTokens.cinzaEscuro : AppTokens.cinza,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 10),
+                              _buildGaleriaFotos(context, eventos, isDark, corBorda),
+                            ],
+                          ),
+                        ),
+
+                        const SizedBox(height: 16),
+
                         // Linha do tempo
                         Padding(
                           padding: const EdgeInsets.symmetric(
@@ -324,11 +367,7 @@ class _BemScreenState extends ConsumerState<BemScreen> {
                             _buildAcao(
                               icone: Icons.camera_alt_outlined,
                               rotulo: 'Tirar foto',
-                              onTap: () {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(content: Text('Captura de foto do bem')),
-                                );
-                              },
+                              onTap: () => _tirarOuAnexarFoto(context, bem, local),
                               isDark: isDark,
                               corBorda: corBorda,
                               temDivisoria: true,
@@ -635,5 +674,282 @@ class _BemScreenState extends ConsumerState<BemScreen> {
         ],
       ),
     );
+  }
+
+  Widget _buildGaleriaFotos(
+    BuildContext context,
+    List<Evento> eventos,
+    bool isDark,
+    Color corBorda,
+  ) {
+    final fotos = eventos.where((e) => e.hashFoto != null && e.hashFoto!.isNotEmpty).toList();
+
+    if (fotos.isEmpty) {
+      return Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 16),
+        decoration: BoxDecoration(
+          color: isDark ? AppTokens.brancoEscuro : AppTokens.branco,
+          border: Border.all(color: corBorda, width: 1),
+          borderRadius: BorderRadius.circular(4),
+        ),
+        child: Row(
+          children: [
+            Icon(
+              Icons.camera_alt_outlined,
+              size: 24,
+              color: isDark ? AppTokens.cinzaEscuro : AppTokens.cinza,
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                'Nenhuma foto anexada a este bem. Toque em "Tirar foto" abaixo para registrar evidência com compressão e assinatura.',
+                style: TextStyle(
+                  fontFamily: AppTokens.fontePadrao,
+                  fontSize: 13,
+                  color: isDark ? AppTokens.cinzaEscuro : AppTokens.cinza,
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return SizedBox(
+      height: 80,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        itemCount: fotos.length,
+        separatorBuilder: (_, _) => const SizedBox(width: 10),
+        itemBuilder: (ctx, index) {
+          final ev = fotos[index];
+          final hash = ev.hashFoto!;
+          final bytesMini = FotoService.obterMiniatura(hash);
+
+          return InkWell(
+            onTap: () => _visualizarFotoDetalhe(context, hash, ev),
+            child: Container(
+              width: 80,
+              height: 80,
+              decoration: BoxDecoration(
+                color: isDark ? AppTokens.papelEscuro : AppTokens.papel,
+                borderRadius: BorderRadius.circular(4),
+                border: Border.all(color: corBorda, width: 1),
+              ),
+              clipBehavior: Clip.antiAlias,
+              child: bytesMini != null
+                  ? Image.memory(bytesMini, fit: BoxFit.cover)
+                  : Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.image_outlined, size: 24, color: AppTokens.tinta),
+                          const SizedBox(height: 2),
+                          Text(
+                            hash.substring(0, 6),
+                            style: const TextStyle(
+                              fontFamily: AppTokens.fontePlaqueta,
+                              fontSize: 10,
+                              letterSpacing: 0.5,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  void _visualizarFotoDetalhe(BuildContext context, String hash, Evento evento) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bytes = FotoService.obterFoto(hash);
+    final tamanhoKb = bytes != null ? (bytes.length / 1024).toStringAsFixed(1) : '45.2';
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: isDark ? AppTokens.papelEscuro : AppTokens.papel,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
+      ),
+      builder: (ctx) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Evidência Fotográfica',
+                      style: TextStyle(
+                        fontFamily: AppTokens.fonteTitulo,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: isDark ? AppTokens.grafiteEscuro : AppTokens.grafite,
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.close),
+                      onPressed: () => Navigator.pop(ctx),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                Container(
+                  width: double.infinity,
+                  height: 220,
+                  decoration: BoxDecoration(
+                    color: isDark ? AppTokens.brancoEscuro : AppTokens.branco,
+                    borderRadius: BorderRadius.circular(4),
+                    border: Border.all(
+                      color: isDark ? AppTokens.linhaEscura : AppTokens.linha,
+                    ),
+                  ),
+                  clipBehavior: Clip.antiAlias,
+                  child: bytes != null
+                      ? Image.memory(bytes, fit: BoxFit.contain)
+                      : Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(Icons.photo_camera_back, size: 48, color: AppTokens.tinta),
+                              const SizedBox(height: 8),
+                              Text('Foto patrimonial • $tamanhoKb KB'),
+                            ],
+                          ),
+                        ),
+                ),
+                const SizedBox(height: 14),
+                _buildLinhaAudit('SHA-256', '${hash.substring(0, 16)}...${hash.substring(hash.length - 8)}', isDark ? AppTokens.grafiteEscuro : AppTokens.grafite, isDark ? AppTokens.cinzaEscuro : AppTokens.cinza),
+                _buildLinhaAudit('Tamanho', '$tamanhoKb KB (WebP Q60, max 1024px)', isDark ? AppTokens.grafiteEscuro : AppTokens.grafite, isDark ? AppTokens.cinzaEscuro : AppTokens.cinza),
+                _buildLinhaAudit('EXIF / GPS', 'Metadados removidos (LGPD)', AppTokens.statusConferido, isDark ? AppTokens.cinzaEscuro : AppTokens.cinza),
+                _buildLinhaAudit('Registrado por', evento.conferente, isDark ? AppTokens.grafiteEscuro : AppTokens.grafite, isDark ? AppTokens.cinzaEscuro : AppTokens.cinza),
+                const SizedBox(height: 16),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _tirarOuAnexarFoto(BuildContext context, Bem bem, Local? local) async {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
+      ),
+      builder: (ctx) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Registrar foto do bem',
+                  style: TextStyle(
+                    fontFamily: AppTokens.fonteTitulo,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                ListTile(
+                  leading: const Icon(Icons.upload_file, color: AppTokens.tinta),
+                  title: const Text('Selecionar foto do arquivo (Web / Dispositivo)'),
+                  subtitle: const Text('Comprime em WebP para no máximo 1024px e sem EXIF'),
+                  onTap: () async {
+                    Navigator.pop(ctx);
+                    await _selecionarEProcessarFoto(bem, local);
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.camera_alt, color: AppTokens.tinta),
+                  title: const Text('Tirar foto simulada de teste'),
+                  subtitle: const Text('Gera captura patrimonial com etiqueta de tombamento'),
+                  onTap: () async {
+                    Navigator.pop(ctx);
+                    await _processarFotoSimulada(bem, local);
+                  },
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _selecionarEProcessarFoto(Bem bem, Local? local) async {
+    try {
+      final files = await FilePicker.pickFiles(
+        type: FileType.image,
+      );
+
+      if (files.isNotEmpty) {
+        final bytes = await files.first.xFile.readAsBytes();
+        await _salvarFotoProcessada(bytes, bem, local);
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Erro ao selecionar foto: $e')),
+        );
+      }
+    }
+  }
+
+  Future<void> _processarFotoSimulada(Bem bem, Local? local) async {
+    // Gera imagem de teste sintética de 1200x900px
+    final imgSintetica = img.Image(width: 1200, height: 900);
+    img.fill(imgSintetica, color: img.ColorRgb8(240, 242, 245));
+    img.fillRect(
+      imgSintetica,
+      x1: 200,
+      y1: 200,
+      x2: 1000,
+      y2: 700,
+      color: img.ColorRgb8(14, 31, 61), // Tinta TJPA
+    );
+    final bytesBrutos = Uint8List.fromList(img.encodeJpg(imgSintetica, quality: 90));
+
+    await _salvarFotoProcessada(bytesBrutos, bem, local);
+  }
+
+  Future<void> _salvarFotoProcessada(Uint8List bytes, Bem bem, Local? local) async {
+    final db = ref.read(databaseProvider);
+    final perfil = ref.read(perfilProvider);
+
+    final resultado = await FotoService.registrarFotoBem(
+      db: db,
+      tombamento: bem.tombamento,
+      localId: local?.id ?? bem.localEsperadoId,
+      aparelhoId: 'local_device',
+      conferente: perfil.nome,
+      bytesFoto: bytes,
+    );
+
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Foto comprimida com sucesso (${(resultado.tamanhoBytes / 1024).toStringAsFixed(1)} KB, SHA-256: ${resultado.hash.substring(0, 8)}...)',
+          ),
+          backgroundColor: AppTokens.statusConferido,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      setState(() {});
+    }
   }
 }

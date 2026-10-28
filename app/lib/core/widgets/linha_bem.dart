@@ -5,12 +5,13 @@ import 'plaqueta.dart';
 /// Situação de um bem para o marcador visual
 enum SituacaoBem { conferido, outraSala, semCadastro, pendente }
 
-/// Linha de bem v2: plaqueta pequena, descrição, categoria, marcador de situação
+/// Linha de bem v2: plaqueta pequena, descrição, categoria, marcador de situação e miniatura de foto
 class LinhaBem extends StatelessWidget {
   final String tombamento;
   final String descricao;
   final String? categoria;
   final SituacaoBem situacao;
+  final String? hashFoto;
   final VoidCallback? onTap;
 
   const LinhaBem({
@@ -19,6 +20,7 @@ class LinhaBem extends StatelessWidget {
     required this.descricao,
     this.categoria,
     this.situacao = SituacaoBem.pendente,
+    this.hashFoto,
     this.onTap,
   });
 
@@ -34,6 +36,29 @@ class LinhaBem extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 0),
         child: Row(
           children: [
+            if (hashFoto != null && hashFoto!.isNotEmpty) ...[
+              Container(
+                width: 38,
+                height: 38,
+                decoration: BoxDecoration(
+                  color: isDark ? AppTokens.papelEscuro : AppTokens.papel,
+                  borderRadius: BorderRadius.circular(2),
+                  border: Border.all(
+                    color: isDark ? AppTokens.linhaEscura : AppTokens.linha,
+                    width: 1,
+                  ),
+                ),
+                clipBehavior: Clip.antiAlias,
+                child: Center(
+                  child: Icon(
+                    Icons.image_outlined,
+                    size: 20,
+                    color: subColor,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+            ],
             // Plaqueta pequena
             Plaqueta(numero: tombamento),
             const SizedBox(width: 12),
