@@ -175,6 +175,24 @@ class _BensScreenState extends ConsumerState<BensScreen> {
           },
         ),
       ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () => context.push('/bem-novo'),
+        backgroundColor: isDark ? AppTokens.brancoEscuro : AppTokens.tinta,
+        foregroundColor: isDark ? AppTokens.grafiteEscuro : AppTokens.branco,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppTokens.raioBloco),
+          side: BorderSide(color: corBorda),
+        ),
+        icon: const Icon(Icons.add, size: 20),
+        label: const Text(
+          'Novo Bem',
+          style: TextStyle(
+            fontFamily: AppTokens.fontePadrao,
+            fontWeight: FontWeight.w600,
+            fontSize: 14,
+          ),
+        ),
+      ),
     );
   }
 }

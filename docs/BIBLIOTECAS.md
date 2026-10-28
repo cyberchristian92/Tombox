@@ -21,6 +21,7 @@ Todas as bibliotecas adotadas possuem licenças de código aberto permissivas (M
 | **camera** | 0.12.1 | BSD-3-Clause | Feed e stream de quadros da câmera em tempo real para o pipeline de IA. |
 | **google_mlkit_text_recognition** | 0.17.1 | Apache-2.0 | OCR offline no aparelho para leitura de plaquetas metálicas. |
 | **google_mlkit_barcode_scanning** | 0.16.1 | Apache-2.0 | Leitura de códigos de barra e QR codes nos mesmos quadros do pipeline de câmera. |
+| **google_mlkit_image_labeling** | 0.16.1 | Apache-2.0 | Classificação de imagem no aparelho para sugestão de categoria patrimonial (Bloco G). |
 | **intl** | 0.20.3 | BSD-3-Clause | Internacionalização, formatação de datas e números no padrão pt_BR. |
 | **uuid** | 4.6.0 | MIT | Geração de identificadores únicos (UUID v4) para eventos imutáveis e aparelho. |
 | **crypto** | 3.0.8 | BSD-3-Clause | Algoritmos criptográficos de hash (SHA-256) para a cadeia de eventos de auditoria. |
