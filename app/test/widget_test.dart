@@ -23,11 +23,12 @@ void main() {
     await tester.pump(const Duration(milliseconds: 100));
     await tester.pump(const Duration(milliseconds: 100));
 
-    expect(find.text('Inventário Patrimonial Offline'), findsOneWidget);
-    expect(find.text('Importar CSV'), findsOneWidget);
-    expect(find.text('Carregar Dados de Demonstração'), findsOneWidget);
-    expect(find.text('Acessar Salas'), findsOneWidget);
-    expect(find.byIcon(Icons.settings_outlined), findsOneWidget);
+    expect(find.text('Início'), findsOneWidget);
+    expect(find.text('Locais'), findsOneWidget);
+    expect(find.byIcon(Icons.qr_code_scanner), findsOneWidget);
+    expect(find.text('Bens'), findsOneWidget);
+    expect(find.text('Mais'), findsOneWidget);
+    expect(find.text('Nenhuma unidade carregada'), findsOneWidget);
 
     await testDb.close();
   });

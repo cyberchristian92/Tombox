@@ -26,31 +26,34 @@ void main() {
     await tester.pump(const Duration(milliseconds: 100));
     expect(find.text('Relatório de Qualidade do CSV'), findsOneWidget);
 
-    // 2. Importação -> Salas
+    // 2. Importação -> Locais (/salas redireciona para /locais)
     appRouter.go('/salas');
     await tester.pump(const Duration(milliseconds: 100));
-    expect(find.text('Salas da Unidade'), findsOneWidget);
+    await tester.pump(const Duration(milliseconds: 100));
+    expect(find.text('Locais'), findsWidgets);
 
-    // 3. Salas -> Conferência
+    // 3. Locais -> Conferência
     appRouter.go('/conferencia/sala-01');
     await tester.pump(const Duration(milliseconds: 100));
-    expect(find.textContaining('bens conferidos'), findsOneWidget);
-    expect(find.text('Visor da Câmera Ativo'), findsOneWidget);
+    await tester.pump(const Duration(milliseconds: 100));
+    expect(find.text('Trocar'), findsOneWidget);
 
     // 4. Conferência -> Ficha do Bem
     appRouter.go('/bem/10023');
     await tester.pump(const Duration(milliseconds: 100));
-    expect(find.text('Ficha do Bem #10023'), findsOneWidget);
-    expect(find.text('Estado de Conservação'), findsOneWidget);
+    await tester.pump(const Duration(milliseconds: 100));
+    expect(find.textContaining('Bem #10023'), findsWidgets);
 
     // 5. Ficha do Bem -> Exportação
     appRouter.go('/exportacao');
+    await tester.pump(const Duration(milliseconds: 100));
     await tester.pump(const Duration(milliseconds: 100));
     expect(find.text('Resumo da Conferência'), findsOneWidget);
     expect(find.text('Exportar CSV de Resultado (share_plus)'), findsOneWidget);
 
     // 6. Exportação -> Configurações
     appRouter.go('/configuracoes');
+    await tester.pump(const Duration(milliseconds: 100));
     await tester.pump(const Duration(milliseconds: 100));
     expect(find.text('Identidade Visual Trocável'), findsOneWidget);
     expect(find.text('Padrão (TJPA)'), findsOneWidget);
@@ -59,7 +62,8 @@ void main() {
     // 7. Retorno para o Início
     appRouter.go('/');
     await tester.pump(const Duration(milliseconds: 100));
-    expect(find.text('Inventário Patrimonial Offline'), findsOneWidget);
+    await tester.pump(const Duration(milliseconds: 100));
+    expect(find.text('Nenhuma unidade carregada'), findsOneWidget);
 
     await testDb.close();
   });

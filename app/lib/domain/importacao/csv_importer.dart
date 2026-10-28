@@ -200,6 +200,31 @@ class CsvImporter {
     final unidadeId = unidadeIdForcado ?? _uuid.v4();
     String unidadeNome = nomeArquivo.replaceAll(RegExp(r'\.[^.]+$'), '');
 
+    // Pré-escaneamento dos locais para agrupar salas por local pai e resolver nomes canônicos
+    final salasPorPai = <String, Set<String>>{};
+    for (int lIdx = 1; lIdx < matriz.length; lIdx++) {
+      final l = matriz[lIdx];
+      if (mapaIndices.containsKey('local') && mapaIndices['local']! < l.length) {
+        final locStr = l[mapaIndices['local']!].toString().trim();
+        if (locStr.isNotEmpty) {
+          final niveis = Normalizacao.extrairNiveisLocal(locStr);
+          if (niveis.isNotEmpty) {
+            final parentKey = niveis.length > 1
+                ? niveis.sublist(0, niveis.length - 1).join(' / ')
+                : '';
+            final salaNome = niveis.last;
+            salasPorPai.putIfAbsent(parentKey, () => <String>{}).add(salaNome);
+          }
+        }
+      }
+    }
+
+    // Resolve as salas canônicas para cada pai
+    final mapaCanonicoPorPai = <String, Map<String, String>>{};
+    for (final entry in salasPorPai.entries) {
+      mapaCanonicoPorPai[entry.key] = Normalizacao.resolverSalasPorPai(entry.value);
+    }
+
     final mapaLocaisPorCaminho = <String, LocaisCompanion>{};
     final mapaLocaisSalas = <String, LocaisCompanion>{};
     final mapaSalasConferencia = <String, ConferenciaSalasCompanion>{};
@@ -306,8 +331,18 @@ class CsvImporter {
         tombamentosVistos[tombamentoNorm] = numLinha;
       }
 
-      // Constrói árvore hierárquica de locais
-      final niveis = Normalizacao.extrairNiveisLocal(localRaw);
+      // Constrói árvore hierárquica de locais com a sala canônica resolvida
+      final niveisRaw = Normalizacao.extrairNiveisLocal(localRaw);
+      final parentKey = niveisRaw.length > 1
+          ? niveisRaw.sublist(0, niveisRaw.length - 1).join(' / ')
+          : '';
+      final salaRaw = niveisRaw.isNotEmpty ? niveisRaw.last : '';
+      final salaCanonico = (mapaCanonicoPorPai[parentKey]?[salaRaw]) ?? salaRaw;
+
+      final niveis = niveisRaw.isNotEmpty
+          ? [...niveisRaw.sublist(0, niveisRaw.length - 1), salaCanonico]
+          : <String>[];
+
       String? paiId;
       String caminhoAcumulado = '';
       LocaisCompanion? localFinalSala;
@@ -320,18 +355,19 @@ class CsvImporter {
           caminhoAcumulado = '$caminhoAcumulado / $nomeNivel';
         }
 
+        final ehFolha = (nivelIdx == niveis.length - 1);
         String tipoNivel;
-        if (nivelIdx == 0) {
+        if (ehFolha) {
+          tipoNivel = 'sala';
+        } else if (nivelIdx == 0) {
           tipoNivel = 'comarca';
           if (unidadeNome == nomeArquivo.replaceAll(RegExp(r'\.[^.]+$'), '')) {
             unidadeNome = nomeNivel;
           }
         } else if (nivelIdx == 1) {
           tipoNivel = 'predio';
-        } else if (nivelIdx == 2) {
-          tipoNivel = 'andar';
         } else {
-          tipoNivel = 'sala';
+          tipoNivel = 'andar';
         }
 
         if (!mapaLocaisPorCaminho.containsKey(caminhoAcumulado)) {
@@ -347,7 +383,7 @@ class CsvImporter {
           mapaLocaisPorCaminho[caminhoAcumulado] = localCompanion;
           paiId = localId;
 
-          if (tipoNivel == 'sala' || nivelIdx == niveis.length - 1) {
+          if (tipoNivel == 'sala') {
             localFinalSala = localCompanion;
             mapaLocaisSalas[localId] = localCompanion;
             mapaSalasConferencia[localId] = ConferenciaSalasCompanion(
@@ -358,7 +394,7 @@ class CsvImporter {
         } else {
           final existente = mapaLocaisPorCaminho[caminhoAcumulado]!;
           paiId = existente.id.value;
-          if (tipoNivel == 'sala' || nivelIdx == niveis.length - 1) {
+          if (tipoNivel == 'sala') {
             localFinalSala = existente;
             mapaLocaisSalas[existente.id.value] = existente;
           }

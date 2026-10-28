@@ -39,7 +39,11 @@ Critérios de avaliação: impacto 30%, viabilidade 30%, inovação 20%, usabili
 
 O celular lê várias plaquetas de uma vez pela câmera, confere cada leitura com a lista de bens esperados da unidade, registra estado, foto e divergências sem internet, e o gestor junta o trabalho de vários conferentes num relatório único, com trilha de auditoria e termo assinado.
 
-## 6. Arquitetura: dois softwares, um formato comum
+## 6. Arquitetura
+
+> **Atualização de 27/10/2026:** a arquitetura mudou. O Tombox agora é um app só, com cópia completa dos dados em cada celular, sincronização entre celulares e eventos assinados por aparelho. O sistema do gestor em Python saiu do escopo; o gestor é um perfil dentro do app. A especificação vigente está em `docs/specs/arquitetura-v2.md` e o design em `docs/specs/design-ui.md`. O texto abaixo é o histórico da versão anterior.
+
+### Versão anterior: dois softwares, um formato comum
 
 Repositório único (monorepo):
 

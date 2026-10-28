@@ -71,11 +71,14 @@ def gerar_dados(caminho_saida):
 
         # Injeta de propósito variações de escrita de sala para testar a normalização
         if i == 14:
-            local_caminho = f"{comarca} / {predio} / {andar} / SL 101"
+            sala_base = SALAS_BASE[0]  # Sala 101 - Protocolo (Térreo)
+            local_caminho = f"{sala_base[0]} / {sala_base[1]} / {sala_base[2]} / SL 101"
         elif i == 28:
-            local_caminho = f"{comarca} / {predio} / {andar} / sala 102"
+            sala_base = SALAS_BASE[1]  # Sala 102 - Secretaria (Térreo)
+            local_caminho = f"{sala_base[0]} / {sala_base[1]} / {sala_base[2]} / sala 102"
         elif i == 45:
-            local_caminho = f"{comarca} / {predio} / {andar} / Sala103"
+            sala_base = SALAS_BASE[2]  # Sala 103 - Atendimento ao Cidadão (Térreo)
+            local_caminho = f"{sala_base[0]} / {sala_base[1]} / {sala_base[2]} / Sala103"
 
         categoria = random.choice(list(ITENS_POR_CATEGORIA.keys()))
         descricao_base, fabricantes, modelos = random.choice(ITENS_POR_CATEGORIA[categoria])

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../core/theme/app_tokens.dart';
 import '../../../domain/casamento/casamento_models.dart';
 import '../../../domain/casamento/estabilidade_filtro.dart';
 
@@ -65,10 +66,7 @@ class CameraOverlayPainter extends CustomPainter {
 
       for (final raw in textosBrutos) {
         final rect = _mapearCoordenadas(raw.caixa, size);
-        canvas.drawRRect(
-          RRect.fromRectAndRadius(rect, const Radius.circular(4)),
-          grayPaint,
-        );
+        canvas.drawRect(rect, grayPaint);
 
         // Exibe texto bruto em tamanho reduzido
         final span = TextSpan(
@@ -87,52 +85,48 @@ class CameraOverlayPainter extends CustomPainter {
       }
     }
 
-    // 2. Desenha caixas ativas identificadas pelo motor de casamento
+    // 2. Desenha caixas retangulares (2 px, sem cantos arredondados, Barlow Condensed)
     for (final item in caixas) {
       Color boxColor;
       switch (item.classificacao) {
         case ClassificacaoPlaqueta.verde:
-          boxColor = const Color(0xFF2E7D32); // Verde: esperado na sala
+          boxColor = AppTokens.statusConferido;
           break;
         case ClassificacaoPlaqueta.amarelo:
-          boxColor = const Color(0xFFF57F17); // Amarelo: esperado em outra sala
+          boxColor = AppTokens.statusOutraSala;
           break;
         case ClassificacaoPlaqueta.vermelho:
-          boxColor = const Color(0xFFC62828); // Vermelho: código desconhecido
+          boxColor = AppTokens.statusSemCadastro;
           break;
       }
 
       final rect = _mapearCoordenadas(item.caixa, size);
 
-      // Contorno da caixa
+      // Contorno retangular de 2 px sem cantos arredondados
       final boxPaint = Paint()
         ..color = boxColor
         ..style = PaintingStyle.stroke
-        ..strokeWidth = 3.0;
+        ..strokeWidth = 2.0;
 
-      canvas.drawRRect(
-        RRect.fromRectAndRadius(rect, const Radius.circular(8)),
-        boxPaint,
-      );
+      canvas.drawRect(rect, boxPaint);
 
-      // Preenchimento translúcido
+      // Preenchimento translúcido sutil
       final fillPaint = Paint()
-        ..color = boxColor.withAlpha(45)
+        ..color = boxColor.withAlpha(30)
         ..style = PaintingStyle.fill;
 
-      canvas.drawRRect(
-        RRect.fromRectAndRadius(rect, const Radius.circular(8)),
-        fillPaint,
-      );
+      canvas.drawRect(rect, fillPaint);
 
-      // Badge superior com número de tombamento
+      // Etiqueta no canto superior esquerdo com o número em Barlow Condensed
       final label = item.isProvavel ? '${item.tombamento}?' : item.tombamento;
       final textSpan = TextSpan(
-        text: ' #$label ',
+        text: ' $label ',
         style: const TextStyle(
+          fontFamily: AppTokens.fontePlaqueta,
           color: Colors.white,
           fontSize: 14,
-          fontWeight: FontWeight.bold,
+          fontWeight: FontWeight.w700,
+          fontFeatures: AppTokens.algarismosTabulares,
         ),
       );
 
@@ -143,50 +137,15 @@ class CameraOverlayPainter extends CustomPainter {
 
       final badgeRect = Rect.fromLTWH(
         rect.left,
-        rect.top > 24 ? rect.top - 22 : rect.top,
+        rect.top > 20 ? rect.top - 20 : rect.top,
         textPainter.width + 4,
         textPainter.height + 2,
       );
 
-      canvas.drawRRect(
-        RRect.fromRectAndRadius(badgeRect, const Radius.circular(4)),
-        Paint()..color = boxColor,
-      );
+      final badgePaint = Paint()..color = boxColor;
+      canvas.drawRect(badgeRect, badgePaint);
 
       textPainter.paint(canvas, Offset(badgeRect.left + 2, badgeRect.top + 1));
-    }
-
-    // 3. HUD de Desempenho do Modo Diagnóstico (Pitch e Calibração)
-    if (modoDiagnostico) {
-      final hudText =
-          '⚡ FPS: ${fps.toStringAsFixed(1)} | Processamento: ${tempoProcessamentoMs}ms | Caixas: ${caixas.length}';
-      final hudSpan = TextSpan(
-        text: hudText,
-        style: const TextStyle(
-          color: Colors.lightGreenAccent,
-          fontSize: 12,
-          fontWeight: FontWeight.bold,
-          fontFamily: 'monospace',
-        ),
-      );
-      final hudPainter = TextPainter(
-        text: hudSpan,
-        textDirection: TextDirection.ltr,
-      )..layout();
-
-      final hudBgRect = Rect.fromLTWH(
-        12,
-        8,
-        hudPainter.width + 16,
-        hudPainter.height + 8,
-      );
-
-      canvas.drawRRect(
-        RRect.fromRectAndRadius(hudBgRect, const Radius.circular(6)),
-        Paint()..color = const Color(0xCC000000),
-      );
-
-      hudPainter.paint(canvas, Offset(hudBgRect.left + 8, hudBgRect.top + 4));
     }
   }
 

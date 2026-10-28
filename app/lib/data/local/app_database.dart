@@ -126,4 +126,10 @@ class AppDatabase extends _$AppDatabase {
       });
     });
   }
+
+  Future<void> fecharSala(String salaId) async {
+    await (update(conferenciaSalas)..where((c) => c.localId.equals(salaId)))
+        .write(const ConferenciaSalasCompanion(status: Value('fechada')));
+  }
 }
+

@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Tombox, direção visual</title>
+<style>
+@font-face{font-family:Barlow;font-weight:400;src:url(../../app/assets/fonts/Barlow-Regular.ttf)}
+@font-face{font-family:Barlow;font-weight:500;src:url(../../app/assets/fonts/Barlow-Medium.ttf)}
+@font-face{font-family:Barlow;font-weight:600;src:url(../../app/assets/fonts/Barlow-SemiBold.ttf)}
+@font-face{font-family:Barlow;font-weight:700;src:url(../../app/assets/fonts/Barlow-Bold.ttf)}
+@font-face{font-family:"Barlow Condensed";font-weight:600;src:url(../../app/assets/fonts/BarlowCondensed-SemiBold.ttf)}
+@font-face{font-family:"Barlow Condensed";font-weight:700;src:url(../../app/assets/fonts/BarlowCondensed-Bold.ttf)}
+@font-face{font-family:"Barlow Semi Condensed";font-weight:600;src:url(../../app/assets/fonts/BarlowSemiCondensed-SemiBold.ttf)}
+:root{
+  --tinta:#13365C; --tinta-2:#0F2B4A; --papel:#F2F4F6; --branco:#FFFFFF;
+  --grafite:#1F2933; --cinza:#5B6672; --linha:#D6DCE1;
+  --aluminio:#DDE3E8; --aluminio-borda:#A9B4BE;
+  --ok:#2F7D4F; --outra:#B5781A; --falta:#B3261E; --pend:#98A2AD;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#C9CFD5;font-family:Barlow,sans-serif;color:var(--grafite);padding:32px;display:flex;gap:28px;align-items:flex-start;font-variant-numeric:tabular-nums}
+.phone{width:360px;height:780px;background:var(--papel);overflow:hidden;position:relative;display:flex;flex-direction:column}
+.bar{background:var(--tinta);color:#fff;height:56px;display:flex;align-items:center;padding:0 16px;gap:12px;flex:none}
+.bar .t{font-weight:600;font-size:18px;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar svg{width:22px;height:22px;fill:none;stroke:#fff;stroke-width:1.8}
+.selo{font:700 11px Barlow;background:#C9A227;color:#1F2933;padding:2px 5px;border-radius:2px;letter-spacing:.02em}
+.scroll{flex:1;overflow:hidden}
+.pad{padding:20px 16px}
+h1{font:600 26px/1.15 "Barlow Semi Condensed";letter-spacing:-.005em}
+.sub{color:var(--cinza);font-size:15px;margin-top:4px}
+.seg{display:flex;height:10px;margin:20px 0 14px;border-radius:2px;overflow:hidden;background:var(--pend)}
+.seg i{display:block}
+.leg{list-style:none;font-size:15px}
+.leg li{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--linha)}
+.leg li:last-child{border-bottom:0}
+.leg b{font-weight:600;margin-left:auto}
+.sq{width:10px;height:10px;border-radius:1px;flex:none}
+.acao{background:var(--branco);border:1px solid var(--linha);border-radius:4px;padding:14px 14px 14px;margin-top:18px}
+.acao .k{font-size:13px;color:var(--cinza)}
+.acao .n{font-weight:600;font-size:17px;margin:2px 0 2px}
+.acao .p{font-size:14px;color:var(--cinza)}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;height:48px;border-radius:4px;background:var(--tinta);color:#fff;font-weight:600;font-size:16px;margin-top:12px}
+.btn svg{width:20px;height:20px;stroke:#fff;fill:none;stroke-width:1.8}
+.sec{display:flex;align-items:baseline;justify-content:space-between;margin:26px 0 6px}
+.sec h2{font:600 18px "Barlow Semi Condensed"}
+.sec a{font-size:14px;color:var(--tinta);font-weight:600;text-decoration:none}
+.rows{background:var(--branco);border-top:1px solid var(--linha);border-bottom:1px solid var(--linha);margin:0 -16px}
+.row{display:flex;gap:12px;padding:12px 16px;border-bottom:1px solid var(--linha);align-items:center}
+.row:last-child{border-bottom:0}
+.row .m{flex:1;min-width:0}
+.row .nm{font-weight:600;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row .ps{font-size:13px;color:var(--cinza);margin-top:1px}
+.mini{height:4px;background:var(--linha);border-radius:1px;margin-top:7px;overflow:hidden}
+.mini i{display:block;height:4px;background:var(--ok)}
+.cnt{font:600 16px "Barlow Condensed";color:var(--grafite);min-width:44px;text-align:right}
+.nav{flex:none;height:64px;background:var(--branco);border-top:1px solid var(--linha);display:flex;align-items:center;padding:0 6px}
+.nav div{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:12px;color:var(--cinza)}
+.nav div.on{color:var(--tinta);font-weight:600}
+.nav svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8}
+.nav .cf{flex:1.3}
+.nav .cf span.b{background:var(--tinta);color:#fff;border-radius:6px;padding:8px 14px;display:flex;align-items:center;gap:6px;font-weight:600;font-size:14px}
+.nav .cf svg{stroke:#fff}
+/* plaqueta */
+.plq{display:inline-flex;align-items:center;gap:7px;background:var(--aluminio);border:1px solid var(--aluminio-borda);border-radius:3px;padding:3px 8px;font:700 17px "Barlow Condensed";letter-spacing:.06em;color:#26303A;flex:none}
+.plq::before,.plq::after{content:"";width:5px;height:5px;border-radius:50%;background:#B7C1CA;box-shadow:inset 0 0 0 1px #9AA6B1}
+.crumb{font-size:13px;color:var(--cinza)}
+.tabs{display:flex;gap:22px;border-bottom:1px solid var(--linha);margin:16px -16px 0;padding:0 16px;font-size:15px}
+.tabs span{padding:10px 0;color:var(--cinza)}
+.tabs span.on{color:var(--tinta);font-weight:600;box-shadow:inset 0 -2px 0 var(--tinta)}
+.tabs em{font-style:normal;font-weight:600;margin-left:4px}
+.bem .ds{font-size:15px;line-height:1.3}
+.bem .ct{font-size:13px;color:var(--cinza);margin-top:2px}
+.st{display:flex;align-items:center;gap:5px;font-size:13px;color:var(--cinza);flex:none}
+.st .sq{width:9px;height:9px}
+.hollow{border:1.5px solid var(--pend);background:transparent}
+.foot{flex:none;padding:12px 16px;background:var(--branco);border-top:1px solid var(--linha)}
+.foot .btn{margin:0}
+/* ficha */
+.hero{background:var(--tinta);padding:18px 16px 22px}
+.bigplq{display:flex;align-items:center;justify-content:space-between;background:var(--aluminio);border:1px solid var(--aluminio-borda);border-radius:4px;height:92px;padding:0 16px}
+.bigplq .riv{width:9px;height:9px;border-radius:50%;background:#B7C1CA;box-shadow:inset 0 0 0 1.5px #96A2AD}
+.bigplq .num{font:700 52px/1 "Barlow Condensed";letter-spacing:.08em;color:#26303A}
+.bigplq .org{font:600 11px Barlow;color:#55606B;text-align:center;margin-top:4px;letter-spacing:.04em}
+.hero h1{color:#fff;font-size:22px;margin-top:16px}
+.hero .sub{color:#B9C6D4}
+.carimbo{display:flex;gap:10px;align-items:flex-start;border:1.5px solid var(--ok);color:var(--ok);border-radius:3px;padding:9px 12px;margin:16px 16px 0;background:#fff}
+.carimbo svg{width:20px;height:20px;stroke:var(--ok);fill:none;stroke-width:2;flex:none;margin-top:1px}
+.carimbo b{display:block;font-size:15px}
+.carimbo span{font-size:13px;color:var(--cinza)}
+dl{background:var(--branco);border-top:1px solid var(--linha);border-bottom:1px solid var(--linha);margin-top:16px}
+dl div{display:flex;padding:10px 16px;border-bottom:1px solid var(--linha);font-size:15px}
+dl div:last-child{border-bottom:0}
+dt{color:var(--cinza);width:118px;flex:none}
+dd{font-weight:500}
+.tl{padding:6px 16px 0}
+.tl h2{font:600 18px "Barlow Semi Condensed";margin:18px 0 8px}
+.ev{display:grid;grid-template-columns:62px 14px 1fr;font-size:14px}
+.ev .d{color:var(--cinza);font-size:13px;line-height:1.3;padding-top:1px}
+.ev .ln{position:relative}
+.ev .ln::before{content:"";position:absolute;left:6px;top:0;bottom:0;width:1px;background:var(--linha)}
+.ev .ln::after{content:"";position:absolute;left:3px;top:4px;width:7px;height:7px;background:var(--tinta);border-radius:1px}
+.ev .tx{padding-bottom:14px;line-height:1.35}
+.ev .tx small{display:block;color:var(--cinza);font-size:12.5px}
+.acts{flex:none;display:flex;background:var(--branco);border-top:1px solid var(--linha)}
+.acts div{flex:1;text-align:center;padding:9px 0 10px;font-size:12.5px;color:var(--tinta);font-weight:600;border-right:1px solid var(--linha)}
+.acts div:last-child{border-right:0}
+.acts svg{display:block;margin:0 auto 3px;width:22px;height:22px;fill:none;stroke:var(--tinta);stroke-width:1.8}
+</style>
+</head>
+<body>
+
+<!-- INICIO -->
+<div class="phone">
+  <div class="bar"><span class="t">Comarca de Breves</span><span class="selo">TJPA</span>
+    <svg viewBox="0 0 24 24"><path d="M7 18a4 4 0 0 1-.6-8 6 6 0 0 1 11.3 1.5A3.5 3.5 0 0 1 17 18z"/><path d="M9.5 13.5l1.8 1.8 3.4-3.6"/></svg></div>
+  <div class="scroll pad">
+    <h1>Fórum Juiz Vicente</h1>
+    <p class="sub">15 salas e 300 bens. Conferência iniciada em 27 de outubro.</p>
+    <div class="seg"><i style="width:31%;background:var(--ok)"></i><i style="width:3%;background:var(--outra)"></i><i style="width:1.2%;background:var(--falta)"></i></div>
+    <ul class="leg">
+      <li><span class="sq" style="background:var(--ok)"></span>Conferidos<b>94</b></li>
+      <li><span class="sq" style="background:var(--outra)"></span>Em outra sala<b>9</b></li>
+      <li><span class="sq" style="background:var(--falta)"></span>Sem cadastro<b>3</b></li>
+      <li><span class="sq" style="background:var(--pend)"></span>Pendentes<b>194</b></li>
+    </ul>
+    <div class="acao">
+      <div class="k">Em andamento</div>
+      <div class="n">Sala 102, Secretaria</div>
+      <div class="p">Térreo. 7 de 18 bens conferidos.</div>
+      <div class="btn"><svg viewBox="0 0 24 24"><path d="M4 8V5h3M17 5h3v3M20 16v3h-3M7 19H4v-3"/><path d="M8 12h8"/></svg>Continuar conferência</div>
+    </div>
+    <div class="sec"><h2>Salas</h2><a>Ver todas</a></div>
+    <div class="rows">
+      <div class="row"><div class="m"><div class="nm">Sala 101, Protocolo</div><div class="ps">Térreo</div><div class="mini"><i style="width:100%"></i></div></div><div class="cnt">19/19</div></div>
+      <div class="row"><div class="m"><div class="nm">Sala 102, Secretaria</div><div class="ps">Térreo</div><div class="mini"><i style="width:39%"></i></div></div><div class="cnt">7/18</div></div>
+      <div class="row"><div class="m"><div class="nm">Sala 103, Atendimento ao Cidadão</div><div class="ps">Térreo</div><div class="mini"><i style="width:0%"></i></div></div><div class="cnt">0/19</div></div>
+    </div>
+  </div>
+  <div class="nav">
+    <div class="on"><svg viewBox="0 0 24 24"><path d="M4 11l8-6 8 6v8h-5v-5H9v5H4z"/></svg>Início</div>
+    <div><svg viewBox="0 0 24 24"><path d="M5 4h6v6H5zM13 14h6v6h-6zM8 10v7h5M13 7h3v7"/></svg>Locais</div>
+    <div class="cf"><span class="b"><svg viewBox="0 0 24 24"><path d="M4 8V5h3M17 5h3v3M20 16v3h-3M7 19H4v-3"/><path d="M8 12h8"/></svg>Conferir</span></div>
+    <div><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h10"/></svg>Bens</div>
+    <div><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.3"/><circle cx="12" cy="12" r="1.3"/><circle cx="19" cy="12" r="1.3"/></svg>Mais</div>
+  </div>
+</div>
+
+<!-- SALA -->
+<div class="phone">
+  <div class="bar"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg><span class="t">Sala 101, Protocolo</span>
+    <svg viewBox="0 0 24 24"><path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h2v2h-2zM18 18h2v2h-2z"/></svg></div>
+  <div class="scroll pad" style="padding-bottom:0">
+    <div class="crumb">Breves, Fórum Juiz Vicente, Térreo</div>
+    <h1 style="margin-top:4px">Sala 101, Protocolo</h1>
+    <p class="sub">Responsável TJ-20278. 7 de 19 conferidos.</p>
+    <div class="seg" style="margin:14px 0 0"><i style="width:37%;background:var(--ok)"></i></div>
+    <div class="tabs"><span class="on">Pendentes<em>12</em></span><span>Conferidos<em>7</em></span><span>Outra sala<em>0</em></span></div>
+    <div class="rows" style="border-top:0">
+      <div class="row bem"><span class="plq">010002</span><div class="m"><div class="ds">Arquivo de aço 4 gavetas W3</div><div class="ct">Mobiliário</div></div><span class="st"><span class="sq hollow"></span></span></div>
+      <div class="row bem"><span class="plq">010008</span><div class="m"><div class="ds">Impressora multifuncional Epson L4260</div><div class="ct">Informática</div></div><span class="st"><span class="sq hollow"></span></span></div>
+      <div class="row bem"><span class="plq">010015</span><div class="m"><div class="ds">Monitor LED 24" Dell T350</div><div class="ct">Informática</div></div><span class="st"><span class="sq hollow"></span></span></div>
+      <div class="row bem"><span class="plq">010017</span><div class="m"><div class="ds">Cafeteira elétrica Mondial CF-06</div><div class="ct">Eletrodomésticos</div></div><span class="st"><span class="sq hollow"></span></span></div>
+      <div class="row bem"><span class="plq">010021</span><div class="m"><div class="ds">Cadeira giratória com braços</div><div class="ct">Mobiliário</div></div><span class="st"><span class="sq hollow"></span></span></div>
+      <div class="row bem"><span class="plq">010026</span><div class="m"><div class="ds">Estabilizador 1000 VA SMS</div><div class="ct">Informática</div></div><span class="st"><span class="sq hollow"></span></span></div>
+    </div>
+  </div>
+  <div class="foot"><div class="btn"><svg viewBox="0 0 24 24"><path d="M4 8V5h3M17 5h3v3M20 16v3h-3M7 19H4v-3"/><path d="M8 12h8"/></svg>Conferir esta sala</div></div>
+</div>
+
+<!-- FICHA -->
+<div class="phone">
+  <div class="bar"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg><span class="t">Bem patrimonial</span>
+    <svg viewBox="0 0 24 24"><path d="M12 4v11M7 9l5-5 5 5M5 15v4h14v-4"/></svg></div>
+  <div class="scroll">
+    <div class="hero">
+      <div class="bigplq"><span class="riv"></span><div><div class="num">010015</div><div class="org">TJPA, patrimônio</div></div><span class="riv"></span></div>
+      <h1>Monitor LED 24" Dell T350</h1>
+      <p class="sub">Informática. Sala 101, Protocolo.</p>
+    </div>
+    <div class="carimbo"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><div><b>Conferido na sala esperada</b><span>27/10 às 10:42, por Rosilene Silva</span></div></div>
+    <dl>
+      <div><dt>Local</dt><dd>Térreo, Sala 101</dd></div>
+      <div><dt>Estado</dt><dd>Bom</dd></div>
+      <div><dt>Responsável</dt><dd>TJ-20278</dd></div>
+      <div><dt>Nº de série</dt><dd>DEL-7851017</dd></div>
+      <div><dt>Fabricante</dt><dd>Dell, modelo T350</dd></div>
+    </dl>
+    <div class="tl">
+      <h2>Histórico</h2>
+      <div class="ev"><div class="d">27/10<br>10:42</div><div class="ln"></div><div class="tx">Conferido por leitura da plaqueta<small>Rosilene Silva, assinatura verificada</small></div></div>
+      <div class="ev"><div class="d">27/10<br>08:15</div><div class="ln"></div><div class="tx">Importado da planilha da unidade<small>unidade_demo.csv</small></div></div>
+    </div>
+  </div>
+  <div class="acts">
+    <div><svg viewBox="0 0 24 24"><path d="M5 19l1-4L16 5l3 3L9 18z"/></svg>Estado</div>
+    <div><svg viewBox="0 0 24 24"><path d="M4 8h3l2-2h6l2 2h3v11H4z"/><circle cx="12" cy="13" r="3.2"/></svg>Foto</div>
+    <div><svg viewBox="0 0 24 24"><path d="M5 5h14v10H9l-4 4z"/></svg>Observação</div>
+    <div><svg viewBox="0 0 24 24"><path d="M4 12h13M13 7l5 5-5 5"/></svg>Mover</div>
+  </div>
+</div>
+
+</body>
+</html>

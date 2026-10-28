@@ -1,6 +1,23 @@
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'brand_config.dart';
+
+class ThemeModeNotifier extends Notifier<ThemeMode> {
+  @override
+  ThemeMode build() => ThemeMode.system;
+
+  void toggle() {
+    state = state == ThemeMode.light ? ThemeMode.dark : ThemeMode.light;
+  }
+
+  void setMode(ThemeMode mode) {
+    state = mode;
+  }
+}
+
+final themeModeProvider =
+    NotifierProvider<ThemeModeNotifier, ThemeMode>(ThemeModeNotifier.new);
 
 enum BrandPreset {
   padrao('assets/brand/brand.json', 'Padrão (TJPA)'),

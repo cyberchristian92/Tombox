@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:tombox/domain/importacao/csv_importer.dart';
 import 'package:tombox/domain/importacao/normalizacao.dart';
@@ -39,6 +40,30 @@ void main() {
         '1º Andar',
         'Sala 201',
       ]);
+    });
+
+    test('Prompt 07: Resolve variações de salas sob o mesmo local pai', () {
+      final salasTerreo = [
+        'Sala 101 - Protocolo',
+        'SL 101',
+        'Sala 102 - Secretaria',
+        'sala 102',
+        'Sala 103 - Atendimento ao Cidadão',
+        'Sala103',
+      ];
+
+      final resolucao = Normalizacao.resolverSalasPorPai(salasTerreo);
+
+      expect(resolucao['Sala 101 - Protocolo'], 'Sala 101 - Protocolo');
+      expect(resolucao['SL 101'], 'Sala 101 - Protocolo');
+      expect(resolucao['Sala 102 - Secretaria'], 'Sala 102 - Secretaria');
+      expect(resolucao['sala 102'], 'Sala 102 - Secretaria');
+      expect(resolucao['Sala 103 - Atendimento ao Cidadão'], 'Sala 103 - Atendimento ao Cidadão');
+      expect(resolucao['Sala103'], 'Sala 103 - Atendimento ao Cidadão');
+
+      // Conjunto único de salas canônicas geradas deve ser exatamente 3
+      final unicas = resolucao.values.toSet();
+      expect(unicas.length, 3);
     });
   });
 
@@ -128,6 +153,44 @@ tombamento;descricao;local
       expect(dados.relatorio.erros.length, 2);
       // Aviso na linha 5 (número diferente de colunas)
       expect(dados.relatorio.avisos.any((a) => a.linha == 5), isTrue);
+    });
+
+    test('Prompt 07 (Parte A): Importação do CSV de demonstração gera exatamente 15 salas, 300 bens únicos e nenhuma sala com 0 bens', () {
+      final arquivoDemo = File('assets/demo/unidade_demo.csv');
+      expect(arquivoDemo.existsSync(), isTrue, reason: 'Arquivo assets/demo/unidade_demo.csv deve existir');
+
+      final bytes = arquivoDemo.readAsBytesSync();
+      final dados = CsvImporter.processarCsv(
+        bytes: bytes,
+        nomeArquivo: 'unidade_demo.csv',
+      );
+
+      // 1. Total de bens válidos únicos: 300 (a partir de 302 linhas com 2 duplicadas)
+      expect(dados.relatorio.bensValidos, 300);
+      expect(dados.relatorio.totalLinhasLidas, 302);
+      expect(dados.relatorio.duplicadosAtualizados, 2);
+      expect(dados.bens.length, 300);
+
+      // 2. Exatamente 15 salas geradas (não 18)
+      expect(dados.relatorio.totalSalas, 15);
+      expect(dados.salas.length, 15);
+
+      // 3. Nenhuma sala com 0 bens
+      final salas = dados.locais.where((l) => l.tipo.value == 'sala').toList();
+      expect(salas.length, 15);
+
+      for (final sala in salas) {
+        final bensDaSala = dados.bens.where((b) => b.localEsperadoId.value == sala.id.value).toList();
+        expect(
+          bensDaSala.isNotEmpty,
+          isTrue,
+          reason: 'A sala "${sala.nome.value}" (${sala.caminhoCompleto.value}) não pode ter 0 bens.',
+        );
+      }
+
+      // 4. Nenhum local em duplicidade por caminho
+      final caminhos = dados.locais.map((l) => l.caminhoCompleto.value).toList();
+      expect(caminhos.length, caminhos.toSet().length, reason: 'Nenhum caminho de local pode ser duplicado.');
     });
   });
 }
